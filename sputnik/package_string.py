@@ -6,11 +6,15 @@ import semver
 class PackageString(object):
     def __init__(self, string=None, name=None, version=None, package=None):
         if string:
-            res = re.split(r'[\s-]', string, 1)
-            if len(res) > 1:
-                self.name, self.version = res
-            elif len(res) > 0:
-                self.name, self.version = res[0], None
+            idx = re.search(r'[^a-z_]', string)
+            if idx:
+                version = string[idx.start():].strip()
+                if version.startswith('-'):
+                    version = version[1:]
+                self.name = string[:idx.start()]
+                self.version = version
+            else:
+                self.name, self.version = string, None
         elif name:
             self.name = name
             self.version = version
