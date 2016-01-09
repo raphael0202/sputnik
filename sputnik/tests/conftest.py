@@ -48,11 +48,6 @@ def sample_package_path2():
     return sample_package_path('2.0.0', '==2.0.0')
 
 
-@pytest.fixture
-def command(tmp_path):
-    return Sputnik(None, None).command()
-
-
 def pytest_addoption(parser):
     parser.addoption("--remote", action="store_true",
         help="include tests that require internet connectivity")

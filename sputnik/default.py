@@ -1,9 +1,9 @@
 # cli/param defaults
-list_meta = False
-list_package_string = ''
+find_meta = False
+find_package_string = ''
 search_string = ''
 build_package_path = '.'
-list_cache = False
+find_cache = False
 repository_url = 'https://index.spacy.io'
 
 try:

@@ -6,7 +6,7 @@ Sputnik is a library for managing data packages for another library, e.g., model
 
 It also comes with a command-line interface, run ```sputnik --help``` or ```python -m sputnik --help``` for assistance.
 
-Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ```semver```) and is tested against ```python ==2.7``` and ```python ==3.4```.
+Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ```semver```) and is tested against python 2.7, 3.4 and 3.5.
 
 ## Installation
 
@@ -28,28 +28,22 @@ Add a ```package.json``` file with following JSON to a directory ```sample``` an
 }
 ```
 
-Get a Sputnik reference:
+Build the package with following code, it should produce a new file and output its path: ```sample/my_model-1.0.0.sputnik```.
 
 ```
-from sputnik import Sputnik
-sputnik = Sputnik()
-```
-
-Then build the package with following code, it should produce a new file and output its path: ```sample/my_model-1.0.0.sputnik```.
-
-```
-command = sputnik.command()
-archive = command.build('sample')
+import sputnik
+archive = sputnik.build(<app_name>, <app_version>, 'sample')
 print(archive.path)
 ```
+
+Replace ```<app_name>``` and ```<app_version>``` with your app's name and version. This information is used to check for package compatibility. You can also provide ```None``` instead to disable package compatibility checks. Read more about package compatibility under the Compatibility section below.
 
 ## Install a package
 
 Decide for a location for your installed packages, e.g., ```packages```. Then install the previously built package with following code, it should output the path of the now installed package: ```packages/my_model-1.0.0```
 
 ```
-command = sputnik.command(data_path='packages')
-package = command.install('sample/my_model-1.0.0.sputnik')
+package = sputnik.install(<app_name>, <app_version>, 'sample/my_model-1.0.0.sputnik', data_path='packages')
 print(package.path)
 ```
 
@@ -58,8 +52,7 @@ print(package.path)
 This should output the package strings for all installed packages, e.g., ```['my_model-1.0.0']```:
 
 ```
-command = sputnik.command(data_path='packages')
-packages = command.list()
+packages = sputnik.find(<app_name>, <app_version>, data_path='packages')
 print([p.ident for p in packages])
 ```
 
@@ -67,36 +60,45 @@ print([p.ident for p in packages])
 
 Sputnik makes it easy to access packaged data files without dealing with filesystem paths or archive file formats.
 
-```
-command.file('my_model', 'data/model')
-```
-
-returns a file object. Or in case you already hold a package object:
+First, get a Sputnik package object with:
 
 ```
-package.file_path('data/model')
+sputnik.package(<app_name>, <app_version>, 'my_model', data_path='packages')
 ```
 
-returns a string with the path to the file.
+On the package object you can check for the existence of a file or directory, get it's path or directly open it. Note that each directory in a path must be provided as separate argument. Do not address paths with slashes or backslashes as this will lead to platform-compatibility issues.
 
-If you want to list all file contents of a package use ```command.files('my_model')```.
+```
+if package.has_path('data', 'model'):
+  print(package.file_path('data', 'model'))
+
+  with package.open('data', 'model', mode='r', encoding='utf8') as f:
+    res = f.read()
+```
+
+If you want to list all file contents of a package use ```sputnik.files('my_model', data_path='packages')```.
 
 ## Remove package
 
 ```
-command.remove('my_model')
+sputnik.remove(<app_name>, <app_version>, 'my_model', data_path='packages')
+```
+
+## Purge package pool/cache
+
+```
+sputnik.purge(<app_name>, <app_version>)
 ```
 
 ## Versioning
 
-```install```, ```list```, ```file```, ```files```, ```search``` and ```remove``` commands accept version strings that follow [semantic versioning](http://semver.org/), e.g.:
+```install```, ```find```, ```files```, ```search``` and ```remove``` commands accept version strings that follow [semantic versioning](http://semver.org/), e.g.:
 
 ```
-command.install('my_model ==1.0.0')
-command.list('my_model >1.0.0')
-command.file('my_model >=1.0.0')
-command.files('my_model <1.0.0')
-command.remove('my_model <=1.0.0')
+sputnik.install(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
+sputnik.find(<app_name>, <app_version>, 'my_model >1.0.0', data_path='packages')
+sputnik.files(<app_name>, <app_version>, 'my_model <1.0.0', data_path='packages')
+sputnik.remove(<app_name>, <app_version>, 'my_model <=1.0.0', data_path='packages')
 ```
 
 ## Compatibility
@@ -122,11 +124,8 @@ This means that this package has version ```2.0.0``` and requires version ```0.6
 Let's get another Sputnik reference - now passing our library name and version to it - and build/install the package:
 
 ```
-sputnik = Sputnik('my_library', '0.6.0')
-command = sputnik.command(data_path='packages')
-
-archive = command.build('my_model')
-command.install(archive.path)
+archive = sputnik.build('my_library', '0.6.0', 'my_model', data_path='packages')
+sputnik.install('my_library', '0.6.0', archive.path, data_path='packages')
 ```
 
 This should throw an exception as it requires version ```0.6.1``` of our library:
@@ -139,9 +138,6 @@ running my_library 0.6.0 but requires {'my_library': '>=0.6.1'}
 Upgrading our library to version ```0.6.1```:
 
 ```
-sputnik = Sputnik('my_library', '0.6.1')
-command = sputnik.command(data_path='packages')
-
-archive = command.build('my_model')
-command.install(archive.path)
+archive = sputnik.build('my_library', '0.6.1', 'my_model', data_path='packages')
+sputnik.install('my_library', '0.6.1', archive.path, data_path='packages')
 ```

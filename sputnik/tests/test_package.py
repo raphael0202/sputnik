@@ -5,7 +5,7 @@ import pytest
 
 from .. import Sputnik
 from ..package import (PackageRecipe, Package,
-                       NotFoundException, NotIncludedException)
+                       NotIncludedException)
 from ..archive import Archive
 from ..pool import Pool
 

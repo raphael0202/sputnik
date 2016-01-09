@@ -1,24 +1,16 @@
 # pylint: disable=C0330
 import sys
 import argparse
-import os
 
 from . import validation
 from . import default
-from . import Sputnik
+from . import install, build, remove, search, find, upload, update, files, purge
 
 
 def package_path_type(path):
     if not validation.is_package_path(path):
         raise argparse.ArgumentTypeError("%r must be a directory")
     return path
-
-
-def command(args):
-    s = Sputnik(name=args.name,
-                version=args.version,
-                console=sys.stdout)
-    return s.command()
 
 
 def add_build_parser(subparsers):
@@ -34,9 +26,11 @@ def add_build_parser(subparsers):
         help='archive path')
 
     def run(args):
-        c = command(args)
-        c.build(package_path=args.package_path,
-                archive_path=args.archive_path)
+        build(app_name=args.name,
+              app_version=args.version,
+              package_path=args.package_path,
+              archive_path=args.archive_path,
+              console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -48,10 +42,12 @@ def add_install_parser(subparsers):
         help='package name or path')
 
     def run(args):
-        c = command(args)
-        c.install(package_name=args.package_name,
-                  data_path=args.data_path,
-                  repository_url=args.repository_url)
+        install(app_name=args.name,
+                app_version=args.version,
+                package_name=args.package_name,
+                data_path=args.data_path,
+                repository_url=args.repository_url,
+                console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -63,35 +59,39 @@ def add_remove_parser(subparsers):
         help='package string')
 
     def run(args):
-        c = command(args)
-        c.remove(package_string=args.package_string,
-                 data_path=args.data_path)
+        remove(app_name=args.name,
+               app_version=args.version,
+               package_string=args.package_string,
+               data_path=args.data_path,
+               console=sys.stdout)
 
     parser.set_defaults(run=run)
 
 
-def add_list_parser(subparsers):
-    parser = subparsers.add_parser('list',
-        help='list installed packages')
+def add_find_parser(subparsers):
+    parser = subparsers.add_parser('find',
+        help='find installed packages')
     parser.add_argument('package_string',
-        default=default.list_package_string,
+        default=default.find_package_string,
         nargs="?",
         help='package string')
     parser.add_argument('--meta',
-        default=default.list_meta,
+        default=default.find_meta,
         action='store_true',
         help='show package meta data')
     parser.add_argument('--cache',
-        default=default.list_cache,
+        default=default.find_cache,
         action='store_true',
-        help='list cached instead of installed packages')
+        help='find cached instead of installed packages')
 
     def run(args):
-        c = command(args)
-        c.list(package_string=args.package_string,
-               meta=args.meta,
-               cache=args.cache,
-               data_path=args.data_path)
+        find(app_name=args.name,
+             app_version=args.version,
+             package_string=args.package_string,
+             meta=args.meta,
+             cache=args.cache,
+             data_path=args.data_path,
+             console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -104,10 +104,12 @@ def add_search_parser(subparsers):
         help='search string')
 
     def run(args):
-        c = command(args)
-        c.search(search_string=args.search_string,
-                 data_path=args.data_path,
-                 repository_url=args.repository_url)
+        search(app_name=args.name,
+               app_version=args.version,
+               search_string=args.search_string,
+               data_path=args.data_path,
+               repository_url=args.repository_url,
+               console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -119,10 +121,12 @@ def add_upload_parser(subparsers):
         help='package path')
 
     def run(args):
-        c = command(args)
-        c.upload(package_path=args.package_path,
-                 data_path=args.data_path,
-                 repository_url=args.repository_url)
+        upload(app_name=args.name,
+               app_version=args.version,
+               package_path=args.package_path,
+               data_path=args.data_path,
+               repository_url=args.repository_url,
+               console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -132,26 +136,11 @@ def add_update_parser(subparsers):
         help='update package cache')
 
     def run(args):
-        c = command(args)
-        c.update(data_path=args.data_path,
-                 repository_url=args.repository_url)
-
-    parser.set_defaults(run=run)
-
-
-def add_file_parser(subparsers):
-    parser = subparsers.add_parser('file',
-        help='displays file path')
-    parser.add_argument('package_string',
-        help='package string')
-    parser.add_argument('path',
-        help='file path')
-
-    def run(args):
-        c = command(args)
-        c.file(package_string=args.package_string,
-               path=args.path,
-               data_path=args.data_path)
+        update(app_name=args.name,
+               app_version=args.version,
+               data_path=args.data_path,
+               repository_url=args.repository_url,
+               console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -163,9 +152,11 @@ def add_files_parser(subparsers):
         help='package string')
 
     def run(args):
-        c = command(args)
-        c.files(package_string=args.package_string,
-                data_path=args.data_path)
+        files(app_name=args.name,
+              app_version=args.version,
+              package_string=args.package_string,
+              data_path=args.data_path,
+              console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -183,10 +174,12 @@ def add_purge_parser(subparsers):
         help='purge pool (installed packages)')
 
     def run(args):
-        c = command(args)
-        c.purge(cache=args.cache,
-                pool=args.pool,
-                data_path=args.data_path)
+        purge(app_name=args.name,
+              app_version=args.version,
+              cache=args.cache,
+              pool=args.pool,
+              data_path=args.data_path,
+              console=sys.stdout)
 
     parser.set_defaults(run=run)
 
@@ -208,11 +201,10 @@ def get_parser():
     add_build_parser(subparsers)
     add_install_parser(subparsers)
     add_remove_parser(subparsers)
-    add_list_parser(subparsers)
+    add_find_parser(subparsers)
     add_search_parser(subparsers)
     add_upload_parser(subparsers)
     add_update_parser(subparsers)
-    add_file_parser(subparsers)
     add_files_parser(subparsers)
     add_purge_parser(subparsers)
 

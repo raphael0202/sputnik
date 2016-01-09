@@ -5,6 +5,10 @@ import os
 import re
 
 
+def expand_path(path):
+    return path and os.path.expanduser(path) or path
+
+
 def is_enough_space(path, size):
     if hasattr(shutil, "disk_usage"):  # python >= 3.3
         free = shutil.disk_usage(path).free

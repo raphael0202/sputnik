@@ -43,8 +43,8 @@ class Archive(PackageStub):
                                           (self.archive.size() / 1024 / 1024))
 
         # remove installed versions of same package
-        for p in pool.list_all(self.name):
-            p.remove()
+        for pkg in pool.list_all(self.name):
+            pkg.remove()
 
         archive_name = util.archive_filename(self.name, self.version)
         path = os.path.join(pool.path, archive_name)
