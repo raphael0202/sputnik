@@ -103,14 +103,15 @@ sputnik.purge(<app_name>, <app_version>, data_path='packages')
 
 ## Versioning
 
-```install```, ```find```, ```files```, ```search``` and ```remove``` commands accept version strings that follow [semantic versioning](http://semver.org/), e.g.:
+```install```, ```find```, ```package````, ```files```, ```search``` and ```remove``` commands accept version strings that follow [semantic versioning](http://semver.org/), e.g.:
 
 ```
 sputnik.install(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
 sputnik.find(<app_name>, <app_version>, 'my_model >1.0.0', data_path='packages')
-sputnik.search(<app_name>, <app_version>, 'my_model >=1.0.0', data_path='packages')
-sputnik.files(<app_name>, <app_version>, 'my_model <1.0.0', data_path='packages')
-sputnik.remove(<app_name>, <app_version>, 'my_model <=1.0.0', data_path='packages')
+sputnik.package(<app_name>, <app_version>, 'my_model >=1.0.0', data_path='packages')
+sputnik.search(<app_name>, <app_version>, 'my_model <1.0.0', data_path='packages')
+sputnik.files(<app_name>, <app_version>, 'my_model <=1.0.0', data_path='packages')
+sputnik.remove(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
 ```
 
 ## Compatibility
