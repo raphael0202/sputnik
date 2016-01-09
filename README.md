@@ -85,7 +85,7 @@ if package.has_path('data', 'model'):
     res = f.read()
 ```
 
-Note that ```package.file_path()``` only works on files, not directory. Use ```package.dirpath()``` on directories.
+Note that ```package.file_path()``` only works on files, not directory. Use ```package.dir_path()``` on directories.
 
 If you want to list all file contents of a package use ```sputnik.files('my_model', data_path='packages')```.
 
