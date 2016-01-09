@@ -108,8 +108,10 @@ class ArchiveWriter(object):
 
             gz.flush()
 
+        meta_path = os.path.relpath(path, self.base_path or '').split(os.path.sep)
+
         self.meta['manifest'].append({
-            'path': os.path.relpath(path, self.base_path or ''),
+            'path': meta_path,
             'noffset': self.archive.tell(),
             'size': os.stat(path).st_size,
             'checksum': (checksum.name, checksum.hexdigest()),

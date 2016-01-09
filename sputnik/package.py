@@ -35,8 +35,7 @@ class Package(PackageStub):  # installed package
         super(Package, self).__init__(**kwargs)
 
     def has_file(self, *path_parts):
-        path = get_path(*path_parts, sep='/')
-        return any([m for m in self.manifest if m['path'] == path])
+        return any([m for m in self.manifest if tuple(m['path']) == path_parts])
 
     def file_path(self, *path_parts, **kwargs):
         require = kwargs.pop('require', True)

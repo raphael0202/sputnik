@@ -17,7 +17,7 @@ def path_content(path, base_path=None):
     for root, _, filenames in os.walk(path):
         for filename in filenames:
             file_path = os.path.join(root, filename)
-            yield os.path.relpath(file_path, base_path)
+            yield tuple(os.path.relpath(file_path, base_path).split(os.path.sep))
 
 
 def test_create_and_check(tmp_path, sample_package_path):
@@ -57,7 +57,7 @@ def test_create_and_checksum(tmp_path, sample_package_path):
 
     with ArchiveReader(archive_path) as archive:
         for entry in archive.meta['manifest']:
-            with io.open(os.path.join(sample_package_path, entry['path']), 'rb') as f:
+            with io.open(os.path.join(sample_package_path, os.path.sep.join(entry['path'])), 'rb') as f:
                 assert entry['checksum'][0] == hashlib.md5().name
                 assert entry['checksum'][1] == hashlib.md5(f.read()).hexdigest()
 

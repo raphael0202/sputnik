@@ -43,7 +43,7 @@ class ArchiveReader(object):
         noffset = 0
         for entry in self.meta['manifest']:
             if entry['path'] == member:
-                path = entry['path']
+                path = os.path.sep.join(entry['path'])
                 size = entry['size']
 
                 self.archive.seek(noffset)
@@ -96,7 +96,7 @@ class ArchiveReader(object):
         return self.meta[member]
 
     def list(self):
-        return [e['path'] for e in self.meta['manifest']]
+        return [tuple(e['path']) for e in self.meta['manifest']]
 
     def size_compressed(self):
         return self.meta[-1]['noffset']

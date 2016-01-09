@@ -115,5 +115,5 @@ def test_archive_files(tmp_path, sample_package_path):
     archive = Archive(new_archive.path, s=s)
 
     assert archive.manifest
-    assert {m['path'] for m in archive.manifest} == \
-           {'data/xyz.model', 'data/xyz.json'}
+    assert {tuple(m['path']) for m in archive.manifest} == \
+           {('data', 'xyz.model'), ('data', 'xyz.json')}
