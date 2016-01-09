@@ -70,11 +70,22 @@ On the package object you can check for the existence of a file or directory, ge
 
 ```
 if package.has_path('data', 'model'):
-  print(package.file_path('data', 'model'))
+  # get filesystem path and use built-in ```open()```
+  f = io.open(package.file_path('data', 'model'), mode='r', encoding='utf8')
+  res = f.read()
+  f.close()
 
+  # use Sputnik's ```open()``` wrapper
+  f = package.open('data', 'model', mode='r', encoding='utf8')
+  res = f.read()
+  f.close()
+
+  # use Sputnik's ```open()``` wrapper in a ```with``` statement
   with package.open('data', 'model', mode='r', encoding='utf8') as f:
     res = f.read()
 ```
+
+Note that ```package.file_path``` only works on files, not directory. Use ```package.dirpath()``` on directories.
 
 If you want to list all file contents of a package use ```sputnik.files('my_model', data_path='packages')```.
 
@@ -87,7 +98,7 @@ sputnik.remove(<app_name>, <app_version>, 'my_model', data_path='packages')
 ## Purge package pool/cache
 
 ```
-sputnik.purge(<app_name>, <app_version>)
+sputnik.purge(<app_name>, <app_version>, data_path='packages')
 ```
 
 ## Versioning
@@ -97,13 +108,14 @@ sputnik.purge(<app_name>, <app_version>)
 ```
 sputnik.install(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
 sputnik.find(<app_name>, <app_version>, 'my_model >1.0.0', data_path='packages')
+sputnik.search(<app_name>, <app_version>, 'my_model >=1.0.0', data_path='packages')
 sputnik.files(<app_name>, <app_version>, 'my_model <1.0.0', data_path='packages')
 sputnik.remove(<app_name>, <app_version>, 'my_model <=1.0.0', data_path='packages')
 ```
 
 ## Compatibility
 
-Sputnik ensures compatibility with the host library using [semantic versioning](http://semver.org/). Let's see an example where this is useful:
+Sputnik ensures compatibility with an app's name and version. An app in this context is the project that imports Sputnik (e.g., name/version of a library) using [semantic versioning](http://semver.org/). Let's see an example where this is useful:
 
 my_model/package.json:
 ```
