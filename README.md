@@ -63,26 +63,22 @@ Sputnik makes it easy to access packaged data files without dealing with filesys
 First, get a Sputnik package object with:
 
 ```
-sputnik.package(<app_name>, <app_version>, 'my_model', data_path='packages')
+package = sputnik.package(<app_name>, <app_version>, 'my_model', data_path='packages')
 ```
 
 On the package object you can check for the existence of a file or directory, get it's path or directly open it. Note that each directory in a path must be provided as separate argument. Do not address paths with slashes or backslashes as this will lead to platform-compatibility issues.
 
 ```
 if package.has_path('data', 'model'):
-  # get filesystem path and use built-in open()
-  f = io.open(package.file_path('data', 'model'), mode='r', encoding='utf8')
-  res = f.read()
-  f.close()
-
-  # use Sputnik's open() wrapper
-  f = package.open('data', 'model', mode='r', encoding='utf8')
-  res = f.read()
-  f.close()
-
-  # use Sputnik's open() wrapper in a with statement
-  with package.open('data', 'model', mode='r', encoding='utf8') as f:
+  with io.open(package.file_path('data', 'model'), mode='r', encoding='utf8') as f:
     res = f.read()
+```
+
+Alternatively you can use Sputnik's ```open()``` wrapper:
+
+```
+with package.open('data', 'model', mode='r', encoding='utf8') as f:
+  res = f.read()
 ```
 
 Note that ```package.file_path()``` only works on files, not directory. Use ```package.dir_path()``` on directories.
