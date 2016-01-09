@@ -103,7 +103,7 @@ sputnik.purge(<app_name>, <app_version>, data_path='packages')
 
 ## Versioning
 
-```install```, ```find```, ```package````, ```files```, ```search``` and ```remove``` commands accept version strings that follow [semantic versioning](http://semver.org/), e.g.:
+```install```, ```find```, ```package```, ```files```, ```search``` and ```remove``` commands accept version strings that follow [semantic versioning](http://semver.org/), e.g.:
 
 ```
 sputnik.install(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
