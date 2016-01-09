@@ -14,17 +14,11 @@ def package_path_type(path):
     return path
 
 
-def expand_path(path):
-    return path and os.path.expanduser(path) or path
-
-
 def command(args):
     s = Sputnik(name=args.name,
                 version=args.version,
                 console=sys.stdout)
-    return s.command(
-        data_path=expand_path(args.data_path),
-        repository_url=args.repository_url)
+    return s.command()
 
 
 def add_build_parser(subparsers):
@@ -41,7 +35,7 @@ def add_build_parser(subparsers):
 
     def run(args):
         c = command(args)
-        c.build(package_path=expand_path(args.package_path),
+        c.build(package_path=args.package_path,
                 archive_path=args.archive_path)
 
     parser.set_defaults(run=run)
@@ -55,7 +49,9 @@ def add_install_parser(subparsers):
 
     def run(args):
         c = command(args)
-        c.install(package_name=expand_path(args.package_name))
+        c.install(package_name=args.package_name,
+                  data_path=args.data_path,
+                  repository_url=args.repository_url)
 
     parser.set_defaults(run=run)
 
@@ -68,7 +64,8 @@ def add_remove_parser(subparsers):
 
     def run(args):
         c = command(args)
-        c.remove(package_string=args.package_string)
+        c.remove(package_string=args.package_string,
+                 data_path=args.data_path)
 
     parser.set_defaults(run=run)
 
@@ -93,7 +90,8 @@ def add_list_parser(subparsers):
         c = command(args)
         c.list(package_string=args.package_string,
                meta=args.meta,
-               cache=args.cache)
+               cache=args.cache,
+               data_path=args.data_path)
 
     parser.set_defaults(run=run)
 
@@ -107,7 +105,9 @@ def add_search_parser(subparsers):
 
     def run(args):
         c = command(args)
-        c.search(search_string=args.search_string)
+        c.search(search_string=args.search_string,
+                 data_path=args.data_path,
+                 repository_url=args.repository_url)
 
     parser.set_defaults(run=run)
 
@@ -120,7 +120,9 @@ def add_upload_parser(subparsers):
 
     def run(args):
         c = command(args)
-        c.upload(package_path=expand_path(args.package_path))
+        c.upload(package_path=args.package_path,
+                 data_path=args.data_path,
+                 repository_url=args.repository_url)
 
     parser.set_defaults(run=run)
 
@@ -131,7 +133,8 @@ def add_update_parser(subparsers):
 
     def run(args):
         c = command(args)
-        c.update()
+        c.update(data_path=args.data_path,
+                 repository_url=args.repository_url)
 
     parser.set_defaults(run=run)
 
@@ -147,7 +150,8 @@ def add_file_parser(subparsers):
     def run(args):
         c = command(args)
         c.file(package_string=args.package_string,
-               path=expand_path(args.path))
+               path=args.path,
+               data_path=args.data_path)
 
     parser.set_defaults(run=run)
 
@@ -160,7 +164,8 @@ def add_files_parser(subparsers):
 
     def run(args):
         c = command(args)
-        c.files(package_string=args.package_string)
+        c.files(package_string=args.package_string,
+                data_path=args.data_path)
 
     parser.set_defaults(run=run)
 
@@ -180,7 +185,8 @@ def add_purge_parser(subparsers):
     def run(args):
         c = command(args)
         c.purge(cache=args.cache,
-                pool=args.pool)
+                pool=args.pool,
+                data_path=args.data_path)
 
     parser.set_defaults(run=run)
 

@@ -50,10 +50,7 @@ def sample_package_path2():
 
 @pytest.fixture
 def command(tmp_path):
-    s = Sputnik(None, None)
-    return s.command(
-        data_path=tmp_path,
-        repository_url=os.environ.get('REPOSITORY_URL', 'https://index-staging.spacy.io'))
+    return Sputnik(None, None).command()
 
 
 def pytest_addoption(parser):
