@@ -23,10 +23,12 @@ Add a ```package.json``` file with following JSON to a directory ```sample``` an
 ```
 {
   "name": "my_model",
-  "include": ["data/*"],
+  "include": [["data", "*"]],
   "version": "1.0.0"
 }
 ```
+
+Note that include's path components are lists to avoid platform compatibility issues.
 
 Build the package with following code, it should produce a new file and output its path: ```sample/my_model-1.0.0.sputnik```.
 

@@ -28,7 +28,7 @@ def sample_package_path(version='1.0.0', compat_version='==1.0.0'):
         f.write(util.json_dump({
             "name": "test",
             "description": "test package",
-            "include": ["data/*"],
+            "include": [("data", "*")],
             "version": version,
             "license": "public domain",
             "compatibility": {"test": compat_version}
