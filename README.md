@@ -70,17 +70,17 @@ On the package object you can check for the existence of a file or directory, ge
 
 ```
 if package.has_path('data', 'model'):
-  # get filesystem path and use built-in ```open()```
+  # get filesystem path and use built-in open()
   f = io.open(package.file_path('data', 'model'), mode='r', encoding='utf8')
   res = f.read()
   f.close()
 
-  # use Sputnik's ```open()``` wrapper
+  # use Sputnik's open() wrapper
   f = package.open('data', 'model', mode='r', encoding='utf8')
   res = f.read()
   f.close()
 
-  # use Sputnik's ```open()``` wrapper in a ```with``` statement
+  # use Sputnik's open() wrapper in a with statement
   with package.open('data', 'model', mode='r', encoding='utf8') as f:
     res = f.read()
 ```
