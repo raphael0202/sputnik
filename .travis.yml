@@ -10,7 +10,7 @@ python:
 install:
   - pip install --upgrade pip
   - pip install -r requirements.txt
-  - pip install pytest
+  - pip install boto pytest
 
 script:
   - python -m pytest sputnik/ --remote
