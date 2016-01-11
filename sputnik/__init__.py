@@ -5,7 +5,8 @@ import semver
 from . import default
 from .pool import Pool
 from .util import expand_path, json_print
-from .package import Package, PackageRecipe
+from .package import Package
+from .recipe import Recipe
 from .archive import Archive
 from .cache import Cache
 from .index import Index
@@ -48,7 +49,7 @@ def build(app_name,
           package_path=default.build_package_path,
           archive_path=None):
 
-    recipe = PackageRecipe(expand_path(package_path))
+    recipe = Recipe(expand_path(package_path))
     return recipe.build(expand_path(archive_path or package_path))
 
 

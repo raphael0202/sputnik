@@ -12,7 +12,6 @@ except ImportError:
 from . import default
 from . import util
 from . import validation
-from .base import Base
 
 
 class Session(object):

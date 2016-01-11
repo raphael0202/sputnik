@@ -6,6 +6,7 @@ import time
 import tempfile
 import hashlib
 import shutil
+import logging
 
 from . import util
 from . import default
@@ -17,6 +18,8 @@ class InvalidPathException(Exception): pass
 
 class ArchiveWriter(object):
     def __init__(self, path, base_path=None, hash_func=hashlib.md5):
+        self.logger = logging.getLogger(__name__)
+
         if hasattr(hashlib, 'algorithms_available'):
             algorithms = hashlib.algorithms_available
         else:
@@ -81,9 +84,11 @@ class ArchiveWriter(object):
         self.cleanup()
 
     def add_json(self, name, obj):
+        self.logger.info("adding %s", name)
         self.meta[name] = obj
 
     def add(self, path, cb=None):
+        self.logger.info("adding %s", path)
         if self.base_path is None and os.path.isabs(path):
             raise InvalidPathException('cannot handle absolute paths without base_path: %s' % path)
 

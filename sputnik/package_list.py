@@ -7,7 +7,6 @@ from . import util
 from . import default
 from .package_string import PackageString
 from .package_stub import PackageStub
-from .base import Base
 
 
 class CompatiblePackageNotFoundException(Exception): pass

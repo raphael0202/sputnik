@@ -1,16 +1,10 @@
 import io
 import os
-from hashlib import md5
 import shutil
-from glob import glob
 import logging
 
 from . import util
-from . import validation
 from . import default
-from .base import Base
-from .new_archive import NewArchive
-from .package_string import PackageString
 from .package_stub import PackageStub
 
 
@@ -34,8 +28,7 @@ class Package(PackageStub):  # installed package
         self.meta = util.json_load(os.path.join(self.path,
                                                 default.META_FILENAME))
 
-        kwargs['defaults'] = self.meta['package']
-        super(Package, self).__init__(**kwargs)
+        super(Package, self).__init__(defaults=self.meta['package'])
 
     def has_file(self, *path_parts):
         return any(m for m in self.manifest if tuple(m['path']) == path_parts)
@@ -104,46 +97,3 @@ class Package(PackageStub):  # installed package
             shutil.move(self.path, tmp)
             self.logger.info('remove %s', self.path)
             shutil.rmtree(tmp)
-
-
-class PackageRecipe(Base):  # package.json recipe
-    keys = ['name', 'version', 'description', 'include',
-            'license', 'compatibility']
-
-    def __init__(self, path, **kwargs):
-        self.logger = logging.getLogger(__name__)
-
-        if not validation.is_package_path(path):
-            raise Exception("%r must be a directory" % path)
-
-        self.path = path
-        package_json_path = os.path.join(path, "package.json")
-        defaults = util.json_load(package_json_path)
-
-        ps = PackageString(
-            name=defaults.get('name'),
-            version=defaults.get('version', {}))
-
-        self.name = ps.name
-        self.version = ps.version
-        self.description = defaults.get('description')
-        self.include = defaults.get('include')
-        self.license = defaults.get('license')
-        self.compatibility = defaults.get('compatibility')
-
-        super(PackageRecipe, self).__init__()
-
-    def is_valid(self):
-        if not self.include:
-            raise Exception("missing include")
-
-    def build(self, archive_path):
-        with NewArchive(self, archive_path, md5,
-                        base_path=self.path) as archive:
-            self.logger.info("build %s", archive.path)
-
-            for include in self.include:
-                for path in glob(os.path.join(self.path, os.path.sep.join(include))):
-                    if os.path.isfile(path):
-                        archive.add_file(path)
-            return archive

@@ -24,9 +24,7 @@ class CachedPackage(PackageStub):
         meta = kwargs.pop('meta')
         cache = kwargs.pop('package_list')
 
-        kwargs['defaults'] = meta['package']
-
-        super(CachedPackage, self).__init__(**kwargs)
+        super(CachedPackage, self).__init__(defaults=meta['package'])
 
         self.data_path = cache.data_path
         self.meta = meta

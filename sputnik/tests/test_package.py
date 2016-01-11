@@ -3,14 +3,14 @@ import json
 
 import pytest
 
-from ..package import (PackageRecipe, Package,
-                       NotIncludedException)
+from ..recipe import Recipe
+from ..package import Package, NotIncludedException
 from ..archive import Archive
 from ..pool import Pool
 
 
 def test_build_and_check_archive(tmp_path, sample_package_path):
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive1 = recipe.build(tmp_path)
 
     assert os.path.isfile(archive1.path)
@@ -22,24 +22,24 @@ def test_build_and_check_archive(tmp_path, sample_package_path):
 
 
 def test_archive_is_compatible(tmp_path, tmp_path2, sample_package_path):
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive = recipe.build(tmp_path)
     pool = Pool('test', '1.0.0', tmp_path2)
     assert pool.is_compatible(archive)
 
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive = recipe.build(tmp_path)
     pool = Pool('test', '2.0.0', tmp_path2)
     assert not pool.is_compatible(archive)
 
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive = recipe.build(tmp_path)
     pool = Pool('xxx', '1.0.0', tmp_path2)
     assert not pool.is_compatible(archive)
 
 
 def test_file_load(tmp_path, tmp_path2, sample_package_path):
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive = Archive(recipe.build(tmp_path).path)
     pool = Pool('test', '1.0.0', tmp_path2)
     package = Package(path=pool.install(archive))
@@ -59,7 +59,7 @@ def test_file_load(tmp_path, tmp_path2, sample_package_path):
 
 
 def test_file_path(tmp_path, tmp_path2, sample_package_path):
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive = Archive(recipe.build(tmp_path).path)
     pool = Pool('test', '1.0.0', tmp_path2)
     package = Package(path=pool.install(archive))
@@ -77,7 +77,7 @@ def test_file_path(tmp_path, tmp_path2, sample_package_path):
 
 
 def test_file_path_same_build_directory(tmp_path, sample_package_path):
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive = Archive(recipe.build(sample_package_path).path)
     pool = Pool('test', '1.0.0', tmp_path)
     package = Package(path=pool.install(archive))
@@ -94,7 +94,7 @@ def test_file_path_same_build_directory(tmp_path, sample_package_path):
 
 @pytest.mark.xfail
 def test_new_archive_files(tmp_path, sample_package_path):
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     archive = recipe.build(tmp_path)
 
     assert archive.manifest
@@ -103,7 +103,7 @@ def test_new_archive_files(tmp_path, sample_package_path):
 
 
 def test_archive_files(tmp_path, sample_package_path):
-    recipe = PackageRecipe(sample_package_path)
+    recipe = Recipe(sample_package_path)
     new_archive = recipe.build(tmp_path)
     archive = Archive(new_archive.path)
 

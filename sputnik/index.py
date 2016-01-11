@@ -11,7 +11,6 @@ except ImportError:
 from . import util
 from .archive import Archive
 from .session import Session, GetRequest, PutRequest
-from .base import Base
 from .cache import Cache
 from .package_stub import PackageStub
 
