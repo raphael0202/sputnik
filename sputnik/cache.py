@@ -2,6 +2,7 @@ import os
 import shutil
 import hashlib
 import io
+import sys
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -13,6 +14,7 @@ from . import default
 from .package_list import PackageList
 from .package_stub import PackageStub
 from .archive import Archive
+from .session import Session
 
 
 class CachedPackage(PackageStub):
@@ -37,22 +39,6 @@ class CachedPackage(PackageStub):
     def manifest(self):
         return self.meta['manifest']
 
-    def fetch(self):
-        path, checksum, url = self.meta['archive'][:3]
-
-        full_path = os.path.join(self.path, path)
-
-        util.makedirs(full_path)
-        uget.download(self.data_path, url, full_path,
-                      console=self.s.console,
-                      checksum=hashlib.md5(),
-                      checksum_header=util.s3_header('md5'),
-                      s=self.s)
-
-        # TODO: use checksum
-
-        return Archive(self.path, s=self.s)
-
     def remove(self):
         if not os.path.isdir(self.path):
             raise Exception("not installed")
@@ -70,11 +56,11 @@ class Cache(PackageList):
 
     package_class = CachedPackage
 
-    def __init__(self, data_path, **kwargs):
+    def __init__(self, app_name, app_version, data_path, **kwargs):
         cache_path = os.path.join(data_path, default.CACHE_DIRNAME)
         kwargs['data_path'] = data_path
 
-        super(Cache, self).__init__(cache_path, **kwargs)
+        super(Cache, self).__init__(app_name, app_version, cache_path, **kwargs)
 
     def exists(self, ident, etag):
         packages = [p for p in self.list() if p.ident == ident]
@@ -87,7 +73,7 @@ class Cache(PackageList):
         assert len(meta['archive']) == 2
         meta = dict(meta)
 
-        package = PackageStub(meta['package'], s=self.s)
+        package = PackageStub(meta['package'])
 
         meta['archive'].append(urljoin(url, meta['archive'][0]))
         meta['etag'] = etag
@@ -101,3 +87,20 @@ class Cache(PackageList):
 
         # TODO optimize for calling update in a loop
         self.load()
+
+    def fetch(self, package_string):
+        package = self.get(package_string)
+        path, checksum, url = package.meta['archive'][:3]
+
+        full_path = os.path.join(package.path, path)
+        util.makedirs(full_path)
+
+        session = Session(self.app_name, self.app_version, self.data_path)
+        uget.download(session, url, full_path,
+                      console=sys.stdout,
+                      checksum=hashlib.md5(),
+                      checksum_header=util.s3_header('md5'))
+
+        # TODO: use checksum
+
+        return Archive(package.path)

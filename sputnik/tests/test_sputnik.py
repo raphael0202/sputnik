@@ -3,7 +3,7 @@ import os
 import pytest
 
 from .. import install, build, remove, search, find, upload, update, files, purge
-from ..archive import PackageNotCompatibleException
+from ..pool import PackageNotCompatibleException
 
 
 def test_build(sample_package_path):

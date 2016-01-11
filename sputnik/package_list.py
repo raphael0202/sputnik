@@ -1,4 +1,7 @@
 import os
+import logging
+
+import semver
 
 from . import util
 from . import default
@@ -11,12 +14,17 @@ class CompatiblePackageNotFoundException(Exception): pass
 class PackageNotFoundException(Exception): pass
 
 
-class PackageList(Base):
+class PackageList(object):
 
     package_class = PackageStub
 
-    def __init__(self, path, **kwargs):
-        super(PackageList, self).__init__(**kwargs)
+    def __init__(self, app_name, app_version, path, **kwargs):
+        super(PackageList, self).__init__()
+
+        self.logger = logging.getLogger(__name__)
+
+        self.app_name = app_name
+        self.app_version = app_version
 
         self.path = path
         self.data_path = kwargs.get('data_path') or path
@@ -40,8 +48,7 @@ class PackageList(Base):
                 defaults=meta['package'],
                 path=os.path.join(self.path, path),
                 meta=meta,
-                package_list=self,
-                s=self.s)
+                package_list=self)
 
     def load(self):
         self._packages = {}
@@ -60,13 +67,13 @@ class PackageList(Base):
         if not candidates:
             raise PackageNotFoundException(package_string)
 
-        candidates.sort(key=lambda c: (c.package.is_compatible(), c))
+        candidates.sort(key=lambda c: (self.is_compatible(c.package), c))
         package = candidates[-1].package
 
-        if not package.is_compatible():
+        if not self.is_compatible(package):
             raise CompatiblePackageNotFoundException(
                 'running %s %s but requires %s' %
-                (self.s.name, self.s.version, package.compatibility))
+                (self.app_name, self.app_version, package.compatibility))
 
         return package
 
@@ -77,14 +84,14 @@ class PackageList(Base):
             return True
 
         if not package_string:
-            return [p for p in self._packages.values() if c(p.is_compatible())]
+            return [p for p in self._packages.values() if c(self.is_compatible(p))]
 
         candidates = []
         query = PackageString(package_string)
 
         for package in self._packages.values():
             ps = PackageString(package=package)
-            if query.match(ps) and c(ps.package.is_compatible()):
+            if query.match(ps) and c(self.is_compatible(ps.package)):
                 candidates.append(ps.package)
 
         return candidates
@@ -93,5 +100,18 @@ class PackageList(Base):
         return self.list(package_string, check_compatibility=False)
 
     def purge(self):
+        self.logger.info('purging %s', self.__class__.__name__)
         for package in self.list():
             package.remove()
+
+    def is_compatible(self, package):
+        if self.app_name and package.compatibility:
+            compatible_version = package.compatibility.get(self.app_name)
+            if not compatible_version:
+                return False
+
+            if self.app_version:
+                return semver.match(self.app_version, compatible_version)
+
+            return False
+        return True

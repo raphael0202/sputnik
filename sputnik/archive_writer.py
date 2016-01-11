@@ -37,6 +37,8 @@ class ArchiveWriter(object):
         return self
 
     def __exit__(self, exc_type, exc_value, traceback):
+        if isinstance(exc_value, Exception):
+            return False
         self.close()
 
     def cleanup(self):

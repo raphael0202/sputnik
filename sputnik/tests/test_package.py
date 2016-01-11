@@ -3,7 +3,6 @@ import json
 
 import pytest
 
-from .. import Sputnik
 from ..package import (PackageRecipe, Package,
                        NotIncludedException)
 from ..archive import Archive
@@ -11,41 +10,39 @@ from ..pool import Pool
 
 
 def test_build_and_check_archive(tmp_path, sample_package_path):
-    s = Sputnik('test', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
+    recipe = PackageRecipe(sample_package_path)
     archive1 = recipe.build(tmp_path)
 
     assert os.path.isfile(archive1.path)
 
-    archive2 = Archive(archive1.path, s=s)
+    archive2 = Archive(archive1.path)
 
     for key in Archive.keys:
         assert getattr(archive1, key) == getattr(archive2, key)
 
 
-def test_archive_is_compatible(tmp_path, sample_package_path):
-    s = Sputnik('test', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
+def test_archive_is_compatible(tmp_path, tmp_path2, sample_package_path):
+    recipe = PackageRecipe(sample_package_path)
     archive = recipe.build(tmp_path)
-    assert archive.is_compatible()
+    pool = Pool('test', '1.0.0', tmp_path2)
+    assert pool.is_compatible(archive)
 
-    s = Sputnik('test', '2.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
+    recipe = PackageRecipe(sample_package_path)
     archive = recipe.build(tmp_path)
-    assert not archive.is_compatible()
+    pool = Pool('test', '2.0.0', tmp_path2)
+    assert not pool.is_compatible(archive)
 
-    s = Sputnik('xxx', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
+    recipe = PackageRecipe(sample_package_path)
     archive = recipe.build(tmp_path)
-    assert not archive.is_compatible()
+    pool = Pool('xxx', '1.0.0', tmp_path2)
+    assert not pool.is_compatible(archive)
 
 
 def test_file_load(tmp_path, tmp_path2, sample_package_path):
-    s = Sputnik('test', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
-    archive = Archive(recipe.build(tmp_path).path, s=s)
-    pool = Pool(tmp_path2, s=s)
-    package = Package(path=archive.install(pool), s=s)
+    recipe = PackageRecipe(sample_package_path)
+    archive = Archive(recipe.build(tmp_path).path)
+    pool = Pool('test', '1.0.0', tmp_path2)
+    package = Package(path=pool.install(archive))
 
     assert package.has_file('data', 'xyz.model')
     assert package.load_utf8(json.load, 'data', 'xyz.json') == {'test': True}
@@ -62,11 +59,10 @@ def test_file_load(tmp_path, tmp_path2, sample_package_path):
 
 
 def test_file_path(tmp_path, tmp_path2, sample_package_path):
-    s = Sputnik('test', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
-    archive = Archive(recipe.build(tmp_path).path, s=s)
-    pool = Pool(tmp_path2, s=s)
-    package = Package(path=archive.install(pool), s=s)
+    recipe = PackageRecipe(sample_package_path)
+    archive = Archive(recipe.build(tmp_path).path)
+    pool = Pool('test', '1.0.0', tmp_path2)
+    package = Package(path=pool.install(archive))
 
     assert package.has_file('data', 'xyz.model')
     assert package.file_path('data', 'xyz.model') == os.path.join(package.path, 'data', 'xyz.model')
@@ -81,11 +77,10 @@ def test_file_path(tmp_path, tmp_path2, sample_package_path):
 
 
 def test_file_path_same_build_directory(tmp_path, sample_package_path):
-    s = Sputnik('test', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
-    archive = Archive(recipe.build(sample_package_path).path, s=s)
-    pool = Pool(tmp_path, s=s)
-    package = Package(path=archive.install(pool), s=s)
+    recipe = PackageRecipe(sample_package_path)
+    archive = Archive(recipe.build(sample_package_path).path)
+    pool = Pool('test', '1.0.0', tmp_path)
+    package = Package(path=pool.install(archive))
 
     assert package.has_file('data', 'xyz.model')
     assert package.file_path('data', 'xyz.model') == os.path.join(package.path, 'data', 'xyz.model')
@@ -99,20 +94,18 @@ def test_file_path_same_build_directory(tmp_path, sample_package_path):
 
 @pytest.mark.xfail
 def test_new_archive_files(tmp_path, sample_package_path):
-    s = Sputnik('test', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
+    recipe = PackageRecipe(sample_package_path)
     archive = recipe.build(tmp_path)
 
     assert archive.manifest
     assert {m['path'] for m in archive.manifest} == \
-           {'data/xyz.model', 'data/xyz.json'}
+           {('data', 'xyz.model'), ('data/xyz.json')}
 
 
 def test_archive_files(tmp_path, sample_package_path):
-    s = Sputnik('test', '1.0.0')
-    recipe = PackageRecipe(sample_package_path, s=s)
+    recipe = PackageRecipe(sample_package_path)
     new_archive = recipe.build(tmp_path)
-    archive = Archive(new_archive.path, s=s)
+    archive = Archive(new_archive.path)
 
     assert archive.manifest
     assert {tuple(m['path']) for m in archive.manifest} == \

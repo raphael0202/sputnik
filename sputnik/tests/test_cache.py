@@ -1,6 +1,5 @@
 import pytest
 
-from .. import Sputnik
 from ..cache import Cache
 from ..package_stub import PackageStub
 from ..package_list import CompatiblePackageNotFoundException, \
@@ -8,9 +7,8 @@ from ..package_list import CompatiblePackageNotFoundException, \
 
 
 def test_update(tmp_path):
-    s = Sputnik('test', '1.0.0')
-    cache = Cache(tmp_path, s=s)
-    package = PackageStub({'name': 'abc', 'version': '1.0.0'}, s=s)
+    cache = Cache('test', '1.0.0', tmp_path)
+    package = PackageStub({'name': 'abc', 'version': '1.0.0'})
 
     meta = {
         'archive': ['archive.gz', None],
@@ -36,9 +34,8 @@ def test_update(tmp_path):
 
 
 def test_remove(tmp_path):
-    s = Sputnik('test', '1.0.0')
-    cache = Cache(tmp_path, s=s)
-    package = PackageStub({'name': 'abc', 'version': '1.0.0'}, s=s)
+    cache = Cache('test', '1.0.0', tmp_path)
+    package = PackageStub({'name': 'abc', 'version': '1.0.0'})
 
     meta = {
         'archive': ['archive.gz', None],
@@ -62,15 +59,14 @@ def test_remove(tmp_path):
 
 
 def test_update_compatible(tmp_path):
-    s = Sputnik('test', '1.0.0')
-    cache = Cache(tmp_path, s=s)
+    cache = Cache('test', '1.0.0', tmp_path)
     package = PackageStub({
         'name': 'abc',
         'version': '1.0.0',
         'compatibility': {
             'test': '>=0.9.0'
         }
-    }, s=s)
+    })
 
     meta = {
         'archive': ['archive.gz', None],
@@ -95,15 +91,14 @@ def test_update_compatible(tmp_path):
 
 
 def test_update_incompatible(tmp_path):
-    s = Sputnik('test', '1.0.0')
-    cache = Cache(tmp_path, s=s)
+    cache = Cache('test', '1.0.0', tmp_path)
     package = PackageStub({
         'name': 'abc',
         'version': '1.0.0',
         'compatibility': {
             'test': '>=2.0.0'
         }
-    }, s=s)
+    })
 
     meta = {
         'archive': ['archive.gz', None],
@@ -125,8 +120,7 @@ def test_update_incompatible(tmp_path):
 
 
 def test_update_multiple_compatible(tmp_path):
-    s = Sputnik('test', '5.0.0')
-    cache = Cache(tmp_path, s=s)
+    cache = Cache('test', '5.0.0', tmp_path)
 
     for i in range(1, 11):
         package = PackageStub({
@@ -135,7 +129,7 @@ def test_update_multiple_compatible(tmp_path):
             'compatibility': {
                 'test': '>=%d.0.0' % i  # from 1.0.0 to 10.0.0
             }
-        }, s=s)
+        })
 
         meta = {
             'archive': ['archive.gz', None],
@@ -152,8 +146,7 @@ def test_update_multiple_compatible(tmp_path):
 
 
 def test_update_multiple_incompatible(tmp_path):
-    s = Sputnik('test', '0.0.0')
-    cache = Cache(tmp_path, s=s)
+    cache = Cache('test', '0.0.0', tmp_path)
 
     for i in range(1, 11):
         package = PackageStub({
@@ -162,7 +155,7 @@ def test_update_multiple_incompatible(tmp_path):
             'compatibility': {
                 'test': '>=%d.0.0' % i  # from 1.0.0 to 10.0.0
             }
-        }, s=s)
+        })
 
         meta = {
             'archive': ['archive.gz', None],

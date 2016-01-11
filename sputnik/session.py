@@ -10,12 +10,16 @@ except ImportError:
     from urllib2 import Request, build_opener, HTTPRedirectHandler, HTTPCookieProcessor
 
 from . import default
+from . import util
 from . import validation
 from .base import Base
 
 
-class Session(Base):
-    def __init__(self, data_path, **kwargs):
+class Session(object):
+    def __init__(self, app_name, app_version, data_path, **kwargs):
+        self.app_name = app_name
+        self.app_version = app_version
+
         if not validation.is_data_path(data_path):
             raise Exception('invalid data_path: %s' % data_path)
 
@@ -32,11 +36,11 @@ class Session(Base):
         super(Session, self).__init__(**kwargs)
 
     def open(self, request, default_charset=None):
-        request.add_header('User-Agent', self.s.user_agent())
-        if self.s.name:
-            request.add_header('X-Sputnik-Name', self.s.name)
-        if self.s.version:
-            request.add_header('X-Sputnik-Version', self.s.version)
+        request.add_header('User-Agent', util.user_agent(self.app_name, self.app_version))
+        if self.app_version:
+            request.add_header('X-Sputnik-Name', self.app_name)
+        if self.app_version:
+            request.add_header('X-Sputnik-Version', self.app_version)
 
         r = self.opener.open(request)
 

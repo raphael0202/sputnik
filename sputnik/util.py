@@ -3,6 +3,30 @@ import json
 import io
 import os
 import re
+import platform
+import sys
+
+import semver
+
+from .__about__ import __version__
+
+
+def parse_version(string):
+    if string:
+        # raises ValueError when invalid
+        return '.'.join(semver.parse(string))
+
+
+def user_agent(name, version):
+    uname = platform.uname()
+    user_agent_vars = [
+        ('Sputnik', __version__),
+        (name, parse_version(version)),
+        (platform.python_implementation(), platform.python_version()),
+        (platform.uname()[0], uname[2]),
+        ('64bits', sys.maxsize > 2**32)]
+
+    return ' '.join(['%s/%s' % (k, v) for k, v in user_agent_vars if k])
 
 
 def expand_path(path):
@@ -33,9 +57,9 @@ def json_load(path):
         return json.loads(f.read().decode('utf8'))
 
 
-def json_print(print_func, obj):
+def json_print(obj):
     defaults = {'sort_keys': True, 'indent': 2, 'separators': (',', ': ')}
-    print_func(json.dumps(obj, **defaults))
+    sys.stdout.write(json.dumps(obj, **defaults) + '\n')
 
 
 def makedirs(path):

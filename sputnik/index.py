@@ -2,6 +2,7 @@ import os
 import json
 import hashlib
 import time
+import logging
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -15,8 +16,13 @@ from .cache import Cache
 from .package_stub import PackageStub
 
 
-class Index(Base):
-    def __init__(self, data_path, repository_url, **kwargs):
+class Index(object):
+    def __init__(self, app_name, app_version, data_path, repository_url, **kwargs):
+        self.logger = logging.getLogger(__name__)
+
+        self.app_name = app_name
+        self.app_version = app_version
+
         if not repository_url:
             raise Exception('invalid repository_url: %s' % repository_url)
 
@@ -33,7 +39,7 @@ class Index(Base):
         os.environ['S3_USE_SIGV4'] = 'True'
 
         # get aws/s3 upload information
-        session = Session(self.data_path, s=self.s)
+        session = Session(self.app_name, self.app_version, self.data_path)
         url = urljoin(self.repository_url, '/upload')
         request = GetRequest(url)
         response = session.open(request, 'utf8')
@@ -44,15 +50,15 @@ class Index(Base):
         bucket = conn.get_bucket(result['bucket'], validate=False)
 
         # to allow random access we upload each archive member individually
-        archive = Archive(path, s=self.s)
+        archive = Archive(path)
         for key_name, f in archive.fileobjs().items():
-            self.s.log('preparing upload for %s' % key_name)
+            self.logger.info('preparing upload for %s', key_name)
             headers = {
                 util.s3_header('md5'): hashlib.md5(f.read()).hexdigest()
             }
             f.seek(os.SEEK_SET, 0)
 
-            self.s.log('uploading %s...' % key_name)
+            self.logger.info('uploading %s...', key_name)
             key = bucket.new_key(key_name)
             key.set_contents_from_file(f, headers=headers)
 
@@ -62,7 +68,7 @@ class Index(Base):
         response = session.open(request)
 
         res = response.getcode() == 200
-        self.s.log('reindex %s' % res)
+        self.logger.info('reindex %s', res)
         return res
 
     def update(self, max_retries=5):
@@ -70,8 +76,8 @@ class Index(Base):
             raise Exception('index server out of sync')
 
         request = GetRequest(urljoin(self.repository_url, '/models'))
-        session = Session(self.data_path, s=self.s)
-        cache = Cache(self.data_path, s=self.s)
+        session = Session(self.app_name, self.app_version, self.data_path)
+        cache = Cache(self.app_name, self.app_version, self.data_path)
 
         # remember cached packages for removal
         packages = cache.list_all()
@@ -85,12 +91,12 @@ class Index(Base):
                 response = session.open(request, 'utf8')
                 meta = json.load(response)
 
-                package = PackageStub(meta['package'], s=self.s)
+                package = PackageStub(meta['package'])
                 assert ident == package.ident
 
                 # index server's etag should match s3's etag
                 if util.unquote(response.headers['etag']) != etag:
-                    self.s.log('wait for index server to sync')
+                    self.logger.info('wait for index server to sync')
                     time.sleep(3)
                     return self.update(max_retries - 1)
 

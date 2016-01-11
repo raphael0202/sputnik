@@ -7,7 +7,6 @@ import json
 import pytest
 
 from .. import util
-from .. import Sputnik
 
 
 @pytest.fixture

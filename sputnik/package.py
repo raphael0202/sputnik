@@ -3,6 +3,7 @@ import os
 from hashlib import md5
 import shutil
 from glob import glob
+import logging
 
 from . import util
 from . import validation
@@ -27,6 +28,8 @@ def get_path(*path_parts, **kwargs):
 
 class Package(PackageStub):  # installed package
     def __init__(self, **kwargs):
+        self.logger = logging.getLogger(__name__)
+
         self.path = kwargs.pop('path')
         self.meta = util.json_load(os.path.join(self.path,
                                                 default.META_FILENAME))
@@ -97,9 +100,9 @@ class Package(PackageStub):  # installed package
 
         # cleanup remove
         if os.path.exists(self.path):
-            self.s.log('pending remove %s' % self.path)
+            self.logger.info('pending remove %s', self.path)
             shutil.move(self.path, tmp)
-            self.s.log('remove %s' % self.path)
+            self.logger.info('remove %s', self.path)
             shutil.rmtree(tmp)
 
 
@@ -108,6 +111,8 @@ class PackageRecipe(Base):  # package.json recipe
             'license', 'compatibility']
 
     def __init__(self, path, **kwargs):
+        self.logger = logging.getLogger(__name__)
+
         if not validation.is_package_path(path):
             raise Exception("%r must be a directory" % path)
 
@@ -126,7 +131,7 @@ class PackageRecipe(Base):  # package.json recipe
         self.license = defaults.get('license')
         self.compatibility = defaults.get('compatibility')
 
-        super(PackageRecipe, self).__init__(**kwargs)
+        super(PackageRecipe, self).__init__()
 
     def is_valid(self):
         if not self.include:
@@ -134,8 +139,8 @@ class PackageRecipe(Base):  # package.json recipe
 
     def build(self, archive_path):
         with NewArchive(self, archive_path, md5,
-                        base_path=self.path, s=self.s) as archive:
-            self.s.log("build %s" % archive.path)
+                        base_path=self.path) as archive:
+            self.logger.info("build %s", archive.path)
 
             for include in self.include:
                 for path in glob(os.path.join(self.path, os.path.sep.join(include))):

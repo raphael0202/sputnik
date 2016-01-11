@@ -10,7 +10,7 @@ except ImportError:
 
 from . import util
 from . import default
-from .session import Session, GetRequest, HeadRequest
+from .session import GetRequest, HeadRequest
 
 
 class UnknownContentLengthException(Exception): pass
@@ -35,6 +35,8 @@ class RateSampler(object):
             self.counter = 0
 
     def __exit__(self, exc_type, exc_value, traceback):
+        if isinstance(exc_value, Exception):
+            return False
         elapsed = time.time() - self.start
         if elapsed >= self.period:
             self.reset = True
@@ -186,9 +188,9 @@ def read_request(session, url, offset=0, console=None,
     return response
 
 
-def download(data_path, url, path=".",
+def download(session, url, path=".",
              checksum=None, checksum_header=None,
-             headers=None, console=None, s=None):
+             headers=None, console=None):
 
     if os.path.isdir(path):
         path = os.path.join(path, url.rsplit('/', 1)[1])
@@ -209,9 +211,6 @@ def download(data_path, url, path=".",
             f.write(chunk)
 
         # TODO add headers
-
-        session = Session(data_path, s=s)
-
         try:
             response = read_request(session, url,
                                     offset=size,
