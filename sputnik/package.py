@@ -20,7 +20,7 @@ class NotIncludedException(Exception): pass
 
 def get_path(*path_parts, **kwargs):
     sep = kwargs.pop('sep', os.path.sep)
-    if any([p for p in path_parts if '/' in p or '\\' in p]):
+    if any(p for p in path_parts if '/' in p or '\\' in p):
         raise InvalidPathPartsException('avoid / and \\ in path parts: %s' % path_parts)
     return sep.join(path_parts)
 
@@ -35,7 +35,7 @@ class Package(PackageStub):  # installed package
         super(Package, self).__init__(**kwargs)
 
     def has_file(self, *path_parts):
-        return any([m for m in self.manifest if tuple(m['path']) == path_parts])
+        return any(m for m in self.manifest if tuple(m['path']) == path_parts)
 
     def file_path(self, *path_parts, **kwargs):
         require = kwargs.pop('require', True)
