@@ -23,6 +23,8 @@ def install(app_name,
     package_name = expand_path(package_name)
     data_path = expand_path(data_path)
 
+    pool = Pool(app_name, app_version, data_path)
+
     if os.path.isfile(package_name):
         archive = Archive(package_name)
 
@@ -30,10 +32,13 @@ def install(app_name,
         index = Index(app_name, app_version, data_path, repository_url)
         index.update()
 
+        packages = pool.list(package_name)
+        if packages:
+            return packages[0]
+
         cache = Cache(app_name, app_version, data_path)
         archive = cache.fetch(package_name)
 
-    pool = Pool(app_name, app_version, data_path)
     path = pool.install(archive)
     return Package(path=path)
 
