@@ -11,6 +11,16 @@ import semver
 from .__about__ import __version__
 
 
+class InvalidPathPartsException(Exception): pass
+
+
+def get_path(*path_parts, **kwargs):
+    sep = kwargs.pop('sep', os.path.sep)
+    if any(p for p in path_parts if '/' in p or '\\' in p):
+        raise InvalidPathPartsException('avoid / and \\ in path parts: %s' % path_parts)
+    return sep.join(path_parts)
+
+
 def parse_version(string):
     if string:
         # raises ValueError when invalid

@@ -11,8 +11,6 @@ class PackageStub(object):
         for key in self.keys:
             setattr(self, key, defaults.get(key))
 
-        super(PackageStub, self).__init__()
-
     def is_valid(self, raise_exception=False):
         res = False
         if self.name and self.version:

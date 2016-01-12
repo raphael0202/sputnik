@@ -7,10 +7,6 @@ from .package_stub import PackageStub
 from .archive_reader import ArchiveReader
 
 
-class PackageNotCompatibleException(Exception): pass
-class NotEnoughSpaceException(Exception): pass
-
-
 class Archive(PackageStub):
     def __init__(self, path, **kwargs):
         self.path = path

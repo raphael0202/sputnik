@@ -8,16 +8,8 @@ from . import default
 from .package_stub import PackageStub
 
 
-class InvalidPathPartsException(Exception): pass
 class NotFoundException(Exception): pass
 class NotIncludedException(Exception): pass
-
-
-def get_path(*path_parts, **kwargs):
-    sep = kwargs.pop('sep', os.path.sep)
-    if any(p for p in path_parts if '/' in p or '\\' in p):
-        raise InvalidPathPartsException('avoid / and \\ in path parts: %s' % path_parts)
-    return sep.join(path_parts)
 
 
 class Package(PackageStub):  # installed package
@@ -36,7 +28,7 @@ class Package(PackageStub):  # installed package
     def file_path(self, *path_parts, **kwargs):
         require = kwargs.pop('require', True)
         assert not kwargs
-        path = get_path(*path_parts)
+        path = util.get_path(*path_parts)
 
         if not self.has_file(*path_parts):
             if require:
@@ -52,7 +44,7 @@ class Package(PackageStub):  # installed package
 
     def dir_path(self, *path_parts, **kwargs):
         require = kwargs.pop('require', True)
-        path = get_path(*path_parts)
+        path = util.get_path(*path_parts)
 
         res = os.path.join(self.path, path)
         if require and not os.path.isdir(res):
