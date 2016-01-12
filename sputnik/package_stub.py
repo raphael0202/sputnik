@@ -1,3 +1,6 @@
+import io
+import types
+import contextlib
 from collections import OrderedDict
 
 from . import util
@@ -36,3 +39,28 @@ class PackageStub(object):
             (k, getattr(self, k))
             for k in self.keys
             if not keys or k in keys])
+
+    def has_file(self, *path_parts):
+        raise NotImplementedError
+
+    def file_path(self, *path_parts):
+        raise NotImplementedError
+
+    def dir_path(self, *path_parts):
+        raise NotImplementedError
+
+    @contextlib.contextmanager
+    def open(self, path_parts, mode='r', encoding='utf8', default=IOError):
+        if self.has_file(*path_parts):
+            f = io.open(self.file_path(*path_parts),
+                        mode=mode, encoding=encoding)
+            yield f
+            f.close()
+
+        else:
+            if isinstance(default, types.TypeType) and issubclass(default, Exception)(default):
+                raise default(self.file_path(*path_parts))
+            elif isinstance(default, Exception):
+                raise default
+            else:
+                yield default

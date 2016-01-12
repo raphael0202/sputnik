@@ -110,3 +110,23 @@ def test_archive_files(tmp_path, sample_package_path):
     assert archive.manifest
     assert {tuple(m['path']) for m in archive.manifest} == \
            {('data', 'xyz.model'), ('data', 'xyz.json')}
+
+
+def test_dir_package(sample_package_path):
+    package = DirPackage(sample_package_path)
+
+    assert package.path == sample_package_path
+
+    assert package.has_file('data', 'xyz.json')
+    assert not package.has_file('data', 'foo')
+
+    assert package.dir_path('data') == os.path.join(sample_package_path, 'data')
+    assert package.file_path('data', 'xyz.model') == os.path.join(sample_package_path, 'data', 'xyz.model')
+
+    assert package.dir_path('data') == os.path.join(sample_package_path, 'data')
+
+    with package.open(['data', 'xyz.json']) as f:
+        assert json.load(f) == {'test': True}
+
+    with package.open(['data', 'xyz.json'], mode='rb', encoding=None) as f:
+        assert f.read() == json.dumps({'test': True}).encode('ascii') == b'{"test": true}'
