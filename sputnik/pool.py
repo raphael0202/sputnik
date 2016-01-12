@@ -43,7 +43,7 @@ class Pool(PackageList):
 
         # remove installed versions of same package
         for pkg in self.list_all(archive.name):
-            pkg.remove()
+            self.remove(pkg)
 
         archive_name = util.archive_filename(archive.name, archive.version)
         path = os.path.join(self.path, archive_name)

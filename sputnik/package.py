@@ -1,6 +1,5 @@
 import io
 import os
-import shutil
 import logging
 
 from . import util
@@ -13,14 +12,13 @@ class NotIncludedException(Exception): pass
 
 
 class Package(PackageStub):  # installed package
-    def __init__(self, **kwargs):
+    def __init__(self, path):
+        meta = util.json_load(os.path.join(path, default.META_FILENAME))
+        super(Package, self).__init__(defaults=meta['package'])
+
         self.logger = logging.getLogger(__name__)
-
-        self.path = kwargs.pop('path')
-        self.meta = util.json_load(os.path.join(self.path,
-                                                default.META_FILENAME))
-
-        super(Package, self).__init__(defaults=self.meta['package'])
+        self.meta = meta
+        self.path = path
 
     def has_file(self, *path_parts):
         return any(m for m in self.manifest if tuple(m['path']) == path_parts)
@@ -76,16 +74,3 @@ class Package(PackageStub):  # installed package
     @property
     def manifest(self):
         return self.meta['manifest']
-
-    def remove(self):
-        if not os.path.isdir(self.path):
-            raise Exception("not installed")
-
-        tmp = self.path + ".remove"
-
-        # cleanup remove
-        if os.path.exists(self.path):
-            self.logger.info('pending remove %s', self.path)
-            shutil.move(self.path, tmp)
-            self.logger.info('remove %s', self.path)
-            shutil.rmtree(tmp)

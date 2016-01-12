@@ -61,7 +61,7 @@ def remove(app_name,
     pool = Pool(app_name, app_version, expand_path(data_path))
     packages = pool.list(package_string)
     for pkg in packages:
-        pkg.remove()
+        pool.remove(pkg)
 
 
 def search(app_name,

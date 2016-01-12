@@ -1,8 +1,8 @@
 import os
-import shutil
 import hashlib
 import io
 import sys
+import logging
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -18,36 +18,17 @@ from .session import Session
 
 
 class CachedPackage(PackageStub):
-    keys = PackageStub.keys + ['path']
-
-    def __init__(self, **kwargs):
-        meta = kwargs.pop('meta')
-        cache = kwargs.pop('package_list')
-
+    def __init__(self, path):
+        meta = util.json_load(os.path.join(path, default.META_FILENAME))
         super(CachedPackage, self).__init__(defaults=meta['package'])
 
-        self.data_path = cache.data_path
+        self.logger = logging.getLogger(__name__)
         self.meta = meta
-        self.cache = cache
-        self.path = os.path.join(cache.path, self.ident)
-
-        assert os.path.isfile(os.path.join(self.path, default.META_FILENAME))
+        self.path = path
 
     @property
     def manifest(self):
         return self.meta['manifest']
-
-    def remove(self):
-        if not os.path.isdir(self.path):
-            raise Exception("not installed")
-
-        # cleanup remove
-        if os.path.exists(self.path):
-            tmp = self.path + '.tmp'
-            shutil.move(self.path, tmp)
-            shutil.rmtree(tmp)
-
-        self.cache.load()
 
 
 class Cache(PackageList):

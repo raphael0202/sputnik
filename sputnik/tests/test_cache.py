@@ -50,7 +50,7 @@ def test_remove(tmp_path):
     assert cache.list()[0].ident == package.ident
 
     package = cache.get('abc')
-    package.remove()
+    cache.remove(package)
 
     assert len(cache.list()) == 0
 

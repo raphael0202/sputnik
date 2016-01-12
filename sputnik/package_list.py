@@ -1,5 +1,6 @@
 import os
 import logging
+import shutil
 
 import semver
 
@@ -43,11 +44,7 @@ class PackageList(object):
 
             meta = util.json_load(meta_path)
 
-            yield self.__class__.package_class(
-                defaults=meta['package'],
-                path=os.path.join(self.path, path),
-                meta=meta,
-                package_list=self)
+            yield self.__class__.package_class(path=os.path.join(self.path, path))
 
     def load(self):
         self._packages = {}
@@ -101,7 +98,7 @@ class PackageList(object):
     def purge(self):
         self.logger.info('purging %s', self.__class__.__name__)
         for package in self.list():
-            package.remove()
+            self.remove(package)
 
     def is_compatible(self, package):
         if self.app_name and package.compatibility:
@@ -114,3 +111,17 @@ class PackageList(object):
 
             return False
         return True
+
+    def remove(self, package):
+        if not os.path.isdir(package.path):
+            raise Exception("not installed")
+
+        # cleanup remove
+        if os.path.exists(package.path):
+            self.logger.info('pending remove %s', package.path)
+            tmp = package.path + '.tmp'
+            shutil.move(package.path, tmp)
+            self.logger.info('remove %s', package.path)
+            shutil.rmtree(tmp)
+
+        self.load()
