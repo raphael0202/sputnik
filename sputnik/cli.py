@@ -33,9 +33,7 @@ def add_build_parser(subparsers):
 
     def run(args):
         set_log_level(args)
-        build(app_name=args.name,
-              app_version=args.version,
-              package_path=args.package_path,
+        build(package_path=args.package_path,
               archive_path=args.archive_path)
 
     parser.set_defaults(run=run)

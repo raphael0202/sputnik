@@ -34,11 +34,9 @@ Build the package with following code, it should produce a new file and output i
 
 ```
 import sputnik
-archive = sputnik.build(<app_name>, <app_version>, 'sample')
+archive = sputnik.build('sample')
 print(archive.path)
 ```
-
-Replace ```<app_name>``` and ```<app_version>``` with your app's name and version. This information is used to check for package compatibility. You can also provide ```None``` instead to disable package compatibility checks. Read more about package compatibility under the Compatibility section below.
 
 ## Install a package
 
@@ -48,6 +46,8 @@ Decide for a location for your installed packages, e.g., ```packages```. Then in
 package = sputnik.install(<app_name>, <app_version>, 'sample/my_model-1.0.0.sputnik', data_path='packages')
 print(package.path)
 ```
+
+Replace ```<app_name>``` and ```<app_version>``` with your app's name and version. This information is used to check for package compatibility. You can also provide ```None``` instead to disable package compatibility checks. Read more about package compatibility under the Compatibility section below.
 
 ## List installed packages
 

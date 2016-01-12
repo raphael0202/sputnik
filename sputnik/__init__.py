@@ -44,9 +44,7 @@ def install(app_name,
     return Package(path=path)
 
 
-def build(app_name,
-          app_version,
-          package_path=default.build_package_path,
+def build(package_path=default.build_package_path,
           archive_path=None):
 
     recipe = Recipe(expand_path(package_path))

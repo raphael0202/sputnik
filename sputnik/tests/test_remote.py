@@ -10,7 +10,7 @@ repository_url = os.environ.get('REPOSITORY_URL', 'https://index-staging.spacy.i
 
 @pytest.mark.remote
 def test_upload_package(sample_package_path, tmp_path):
-    archive = build(None, None, sample_package_path)
+    archive = build(sample_package_path)
     assert os.path.isfile(archive.path)
 
     res = upload(None, None, archive.path, data_path=tmp_path, repository_url=repository_url)
@@ -19,7 +19,7 @@ def test_upload_package(sample_package_path, tmp_path):
 
 @pytest.mark.remote
 def test_upload_package2(sample_package_path2, tmp_path):
-    archive = build(None, None, sample_package_path2)
+    archive = build(sample_package_path2)
     assert os.path.isfile(archive.path)
 
     res = upload(None, None, archive.path, data_path=tmp_path, repository_url=repository_url)

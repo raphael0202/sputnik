@@ -7,12 +7,12 @@ from ..pool import PackageNotCompatibleException
 
 
 def test_build(sample_package_path):
-    archive = build(None, None, sample_package_path)
+    archive = build(sample_package_path)
     assert os.path.isfile(archive.path)
 
 
 def test_build_install_remove(sample_package_path, tmp_path):
-    archive = build(None, None, sample_package_path)
+    archive = build(sample_package_path)
     assert os.path.isfile(archive.path)
 
     packages = find(None, None, data_path=tmp_path)
@@ -33,10 +33,10 @@ def test_build_install_remove(sample_package_path, tmp_path):
 
 
 def test_install_incompatible(sample_package_path, sample_package_path2, tmp_path):
-    archive1 = build('test', '1.0.0', sample_package_path)
+    archive1 = build(sample_package_path)
     package1 = install('test', '1.0.0', archive1.path, data_path=tmp_path)
 
-    archive2 = build('test', '1.0.0', sample_package_path2)
+    archive2 = build(sample_package_path2)
     with pytest.raises(PackageNotCompatibleException):
         install('test', '1.0.0', archive2.path, data_path=tmp_path)
 
@@ -46,7 +46,7 @@ def test_install_incompatible(sample_package_path, sample_package_path2, tmp_pat
 
 
 def test_install_upgrade(sample_package_path, sample_package_path2, tmp_path):
-    archive = build('test', '1.0.0', sample_package_path)
+    archive = build(sample_package_path)
     install('test', '1.0.0', archive.path, data_path=tmp_path)
 
     packages = find('test', '2.0.0', data_path=tmp_path)
@@ -62,7 +62,7 @@ def test_purge_raw(sample_package_path, tmp_path):
 
 
 def test_purge(sample_package_path, tmp_path):
-    archive = build('test', '1.0.0', sample_package_path)
+    archive = build(sample_package_path)
     install('test', '1.0.0', archive.path, data_path=tmp_path)
 
     assert len(find('test', '1.0.0', data_path=tmp_path)) == 1
