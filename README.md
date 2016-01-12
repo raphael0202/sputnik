@@ -79,7 +79,7 @@ if package.has_path('data', 'model'):
 Alternatively you can use Sputnik's ```open()``` wrapper:
 
 ```
-with package.open('data', 'model', mode='r', encoding='utf8') as f:
+with package.open(['data', 'model'], mode='r', encoding='utf8') as f:
   res = f.read()
 ```
 
