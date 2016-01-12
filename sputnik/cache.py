@@ -2,7 +2,6 @@ import os
 import hashlib
 import io
 import sys
-import logging
 try:
     from urllib.parse import urljoin
 except ImportError:
@@ -15,20 +14,7 @@ from .package_list import PackageList
 from .package_stub import PackageStub
 from .archive import Archive
 from .session import Session
-
-
-class CachedPackage(PackageStub):
-    def __init__(self, path):
-        meta = util.json_load(os.path.join(path, default.META_FILENAME))
-        super(CachedPackage, self).__init__(defaults=meta['package'])
-
-        self.logger = logging.getLogger(__name__)
-        self.meta = meta
-        self.path = path
-
-    @property
-    def manifest(self):
-        return self.meta['manifest']
+from .cached_package import CachedPackage
 
 
 class Cache(PackageList):
