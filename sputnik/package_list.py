@@ -4,7 +4,6 @@ import shutil
 
 import semver
 
-from . import util
 from . import default
 from .package_string import PackageString
 from .package_stub import PackageStub
