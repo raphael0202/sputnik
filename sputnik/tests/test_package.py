@@ -7,6 +7,7 @@ from ..recipe import Recipe
 from ..package import Package, NotIncludedException
 from ..archive import Archive
 from ..pool import Pool
+from ..dir_package import DirPackage
 
 
 def test_build_and_check_archive(tmp_path, sample_package_path):
@@ -38,31 +39,45 @@ def test_archive_is_compatible(tmp_path, tmp_path2, sample_package_path):
     assert not pool.is_compatible(archive)
 
 
-def test_file_load(tmp_path, tmp_path2, sample_package_path):
+def test_package_file_load(tmp_path, tmp_path2, sample_package_path):
     recipe = Recipe(sample_package_path)
     archive = Archive(recipe.build(tmp_path).path)
     pool = Pool('test', '1.0.0', tmp_path2)
-    package = Package(path=pool.install(archive))
+    path = pool.install(archive)
+    package = Package(path=path)
 
-    assert package.has_file('data', 'xyz.model')
-    assert package.load_utf8(json.load, 'data', 'xyz.json') == {'test': True}
-    assert package.load(lambda x:x.read(), 'data', 'xyz.json') == \
-        json.dumps({'test': True}).encode('ascii')
+    assert package.path == path
 
-    assert not package.has_file('data', 'model')
+    assert package.has_file('data', 'xyz.json')
+    assert not package.has_file('data', 'foo')
 
-    assert package.load_utf8(None, 'data', 'model', default=0) == 0
-    assert package.load_utf8(None, 'data', 'model', require=False) == None
+    with package.open(['data', 'xyz.json']) as f:
+        assert json.load(f) == {'test': True}
 
-    assert package.load(None, 'data', 'model', default=0) == 0
-    assert package.load(None, 'data', 'model', require=False) == None
+    with package.open(['data', 'xyz.json'], mode='rb', encoding=None) as f:
+        data = f.read()
+        assert data == json.dumps({'test': True}).encode('ascii')
+        assert data == b'{"test": true}'
+
+    with package.open(['data', 'foo'], default=0) as f:
+        assert f == 0
+
+    with package.open(['data', 'foo'], default=None) as f:
+        assert f is None
+
+    with pytest.raises(Exception):
+        with package.open(['data', 'foo'], default=Exception) as f:
+           pass
 
 
-def test_file_path(tmp_path, tmp_path2, sample_package_path):
+def test_package_file_path(tmp_path, tmp_path2, sample_package_path):
     recipe = Recipe(sample_package_path)
     archive = Archive(recipe.build(tmp_path).path)
     pool = Pool('test', '1.0.0', tmp_path2)
-    package = Package(path=pool.install(archive))
+    path = pool.install(archive)
+    package = Package(path=path)
+
+    assert package.path == path
 
     assert package.has_file('data', 'xyz.model')
     assert package.file_path('data', 'xyz.model') == os.path.join(package.path, 'data', 'xyz.model')
@@ -72,8 +87,6 @@ def test_file_path(tmp_path, tmp_path2, sample_package_path):
     assert not package.has_file('data', 'model')
     with pytest.raises(NotIncludedException):
         assert package.file_path('data', 'model')
-
-    assert package.file_path('data', 'model', require=False) is None
 
 
 def test_file_path_same_build_directory(tmp_path, sample_package_path):
