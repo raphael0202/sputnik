@@ -26,13 +26,17 @@ class Recipe(PackageStub):  # package archive
         self.base_path = base_path or recipe_path
 
         self.include = defaults.get('include')
-        self.is_valid()
+        self.is_valid(True)
 
-    def is_valid(self):
+    def is_valid(self, raise_exception=False):
         required_keys = ['name', 'version', 'include']
         for key in required_keys:
             if getattr(self, key) is None:
-                raise ValidationException('invalid %s: %s' % (key, getattr(self, key)))
+                if raise_exception:
+                    raise ValidationException('invalid %s: %s' % (key, getattr(self, key)))
+                else:
+                    return False
+        return True
 
     def build(self, archive_path):
         if os.path.isdir(archive_path):
