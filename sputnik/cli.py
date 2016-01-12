@@ -1,5 +1,4 @@
 # pylint: disable=C0330
-import sys
 import argparse
 import logging
 

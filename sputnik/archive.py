@@ -8,13 +8,12 @@ from .archive_reader import ArchiveReader
 
 
 class Archive(PackageStub):
-    def __init__(self, path, **kwargs):
-        self.path = path
+    def __init__(self, path):
         self.archive = ArchiveReader(path)
-
         defaults = self.archive.get_member('package')
+        super(Archive, self).__init__(defaults)
 
-        super(Archive, self).__init__(defaults, **kwargs)
+        self.path = path
 
     @property
     def manifest(self):

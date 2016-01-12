@@ -190,7 +190,7 @@ def read_request(session, url, offset=0, console=None,
 
 def download(session, url, path=".",
              checksum=None, checksum_header=None,
-             headers=None, console=None):
+             console=None):
 
     if os.path.isdir(path):
         path = os.path.join(path, url.rsplit('/', 1)[1])

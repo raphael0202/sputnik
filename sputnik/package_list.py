@@ -12,6 +12,7 @@ from .package_stub import PackageStub
 
 class CompatiblePackageNotFoundException(Exception): pass
 class PackageNotFoundException(Exception): pass
+class InvalidDataPathException(Exception): pass
 
 
 class PackageList(object):
@@ -28,6 +29,10 @@ class PackageList(object):
 
         self.path = path
         self.data_path = kwargs.get('data_path') or path
+
+        if not self.data_path:
+            raise InvalidDataPathException(self.data_path)
+
         self.load()
 
     def packages(self):
@@ -41,8 +46,6 @@ class PackageList(object):
             meta_path = os.path.join(self.path, path, default.META_FILENAME)
             if not os.path.isfile(meta_path):
                 continue
-
-            meta = util.json_load(meta_path)
 
             yield self.__class__.package_class(path=os.path.join(self.path, path))
 

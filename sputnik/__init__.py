@@ -1,7 +1,5 @@
 import os
 
-import semver
-
 from . import default
 from .pool import Pool
 from .util import expand_path, json_print
@@ -130,10 +128,10 @@ def files(app_name,
     if os.path.isfile(package_string):
         obj = Archive(package_string)
     else:
-        pool = Pool(expand_path(data_path))
+        pool = Pool(app_name, app_version, expand_path(data_path))
         obj = pool.get(package_string)
 
-    res = {f['path']: {'checksum': f['checksum'], 'size': f['size']}
+    res = {os.path.sep.join(f['path']): {'checksum': f['checksum'], 'size': f['size']}
            for f in obj.manifest}
     json_print({obj.ident: res})
     return res

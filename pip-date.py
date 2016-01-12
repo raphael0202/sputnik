@@ -5,7 +5,6 @@ import re
 import sys
 from bisect import bisect
 from datetime import datetime
-from datetime import timedelta
 import ssl
 
 try:
