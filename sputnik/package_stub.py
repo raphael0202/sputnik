@@ -2,6 +2,10 @@ import io
 import types
 import contextlib
 from collections import OrderedDict
+try:
+    from types import TypeType as type
+except ImportError:
+    pass
 
 from . import util
 
@@ -58,7 +62,7 @@ class PackageStub(object):
             f.close()
 
         else:
-            if isinstance(default, types.TypeType) and issubclass(default, Exception)(default):
+            if isinstance(default, type) and issubclass(default, Exception):
                 raise default(self.file_path(*path_parts))
             elif isinstance(default, Exception):
                 raise default
