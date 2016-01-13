@@ -11,7 +11,6 @@ except ImportError:
 
 from . import default
 from . import util
-from . import validation
 
 
 class Session(object):
@@ -19,7 +18,7 @@ class Session(object):
         self.app_name = app_name
         self.app_version = app_version
 
-        if not validation.is_data_path(data_path):
+        if not data_path or not os.path.isdir(data_path):
             raise Exception('invalid data_path: %s' % data_path)
 
         self.cookie_jar = MozillaCookieJar(os.path.join(data_path, default.COOKIES_FILENAME))

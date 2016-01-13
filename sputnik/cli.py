@@ -2,15 +2,8 @@
 import argparse
 import logging
 
-from . import validation
 from . import default
 from . import install, build, remove, search, find, upload, update, files, purge
-
-
-def package_path_type(path):
-    if not validation.is_package_path(path):
-        raise argparse.ArgumentTypeError("%r must be a directory")
-    return path
 
 
 def set_log_level(args):
@@ -22,7 +15,6 @@ def add_build_parser(subparsers):
     parser = subparsers.add_parser('build',
         help='build package from package.json')
     parser.add_argument('package_path',
-        type=package_path_type,
         default=default.build_package_path,
         nargs='?',
         help='package.json directory')

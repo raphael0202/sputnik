@@ -2,7 +2,6 @@ import os
 import logging
 from glob import glob
 
-from . import validation
 from . import util
 from .package_stub import PackageStub
 from .archive_writer import ArchiveWriter
@@ -19,8 +18,8 @@ class Recipe(PackageStub):  # package archive
 
         self.logger = logging.getLogger(__name__)
 
-        if not validation.is_package_path(recipe_path):
-            raise Exception("%r must be a directory" % recipe_path)
+        if not recipe_path or not os.path.isdir(recipe_path):
+            raise Exception('invalid recipe_path: %s' % recipe_path)
 
         self.recipe_path = recipe_path
         self.base_path = base_path or recipe_path
