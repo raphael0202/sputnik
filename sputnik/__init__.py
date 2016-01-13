@@ -31,7 +31,7 @@ def install(app_name,
         index = Index(app_name, app_version, data_path, repository_url)
         index.update()
 
-        packages = pool.list(package_name)
+        packages = pool.find(package_name)
         if packages:
             return packages[0]
 
@@ -55,7 +55,7 @@ def remove(app_name,
            data_path=default.data_path):
 
     pool = Pool(app_name, app_version, expand_path(data_path))
-    packages = pool.list(package_string)
+    packages = pool.find(package_string)
     for pkg in packages:
         pool.remove(pkg)
 
@@ -71,7 +71,7 @@ def search(app_name,
     index.update()
 
     cache = Cache(app_name, app_version, data_path)
-    packages = cache.list(search_string)
+    packages = cache.find(search_string)
     json_print([p.ident for p in packages])
     return packages
 
@@ -85,7 +85,7 @@ def find(app_name,
 
     cls = cache and Cache or Pool
     obj = cls(app_name, app_version, expand_path(data_path))
-    packages = obj.list(package_string)
+    packages = obj.find(package_string)
     keys = not meta and ('name', 'version') or ()
     json_print([p.to_dict(keys) for p in packages])
     return packages

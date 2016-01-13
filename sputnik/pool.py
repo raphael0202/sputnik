@@ -28,7 +28,7 @@ class Pool(PackageList):
                 shutil.rmtree(os.path.join(self.path, filename))
 
     def install(self, archive):
-        for pkg in self.list_all(archive.name):
+        for pkg in self.find(archive.name, only_compatible=False):
             if archive.ident == pkg.ident:
                 raise PackageAlreadyInstalledException(pkg.ident)
 
@@ -42,7 +42,7 @@ class Pool(PackageList):
                                           (archive.size() / 1024 / 1024))
 
         # remove installed versions of same package
-        for pkg in self.list_all(archive.name):
+        for pkg in self.find(archive.name, only_compatible=False):
             self.remove(pkg)
 
         archive_name = util.archive_filename(archive.name, archive.version)

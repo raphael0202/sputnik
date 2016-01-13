@@ -54,7 +54,7 @@ class PackageList(object):
             self._packages[package.ident] = package
 
     def get(self, package_string):
-        candidates = sorted(self.list_all(package_string),
+        candidates = sorted(self.find(package_string, only_compatible=False),
                             key=lambda c: (self.is_compatible(c), c))
 
         if not candidates:
@@ -69,17 +69,17 @@ class PackageList(object):
 
         return package
 
-    def list(self, package_string=None):
-        return [p for p in self.list_all(package_string) if self.is_compatible(p)]
-
-    def list_all(self, package_string=None):
+    def find(self, package_string=None, only_compatible=True):
+        res = []
         for package in self._packages.values():
             if util.constraint_match(package_string, package.name, package.version):
-                yield package
+                if not only_compatible or self.is_compatible(package):
+                    res.append(package)
+        return res
 
     def purge(self):
         self.logger.info('purging %s', self.__class__.__name__)
-        for package in self.list():
+        for package in self.find():
             self.remove(package)
 
     def is_compatible(self, package):

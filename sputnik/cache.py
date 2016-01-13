@@ -28,7 +28,7 @@ class Cache(PackageList):
         super(Cache, self).__init__(app_name, app_version, cache_path, **kwargs)
 
     def exists(self, ident, etag):
-        packages = [p for p in self.list() if p.ident == ident]
+        packages = [p for p in self.find() if p.ident == ident]
         if packages:
             assert len(packages) <= 1
             return packages[0].meta['etag'] == etag

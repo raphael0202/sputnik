@@ -16,15 +16,15 @@ def test_list(tmp_path):
             'package': package.to_dict()
         }, None)
 
-    assert len(cache.list('xyz')) == 0
+    assert len(cache.find('xyz')) == 0
 
-    assert len(cache.list()) == 4
-    assert len(cache.list('')) == 4
+    assert len(cache.find()) == 4
+    assert len(cache.find('')) == 4
 
-    assert len(cache.list('abc')) == 4
-    assert len(cache.list('abc ==1.0.0')) == 1
-    assert len(cache.list('abc ==0.1.0')) == 0
-    assert len(cache.list('abc>=1.9.0')) == 3
+    assert len(cache.find('abc')) == 4
+    assert len(cache.find('abc ==1.0.0')) == 1
+    assert len(cache.find('abc ==0.1.0')) == 0
+    assert len(cache.find('abc>=1.9.0')) == 3
 
 
 def test_update(tmp_path):
@@ -36,12 +36,12 @@ def test_update(tmp_path):
         'package': package.to_dict()
     }
 
-    assert len(cache.list()) == 0
+    assert len(cache.find()) == 0
 
     cache.update(meta, None)
 
-    assert len(cache.list()) == 1
-    assert cache.list()[0].ident == package.ident
+    assert len(cache.find()) == 1
+    assert cache.find()[0].ident == package.ident
 
     with pytest.raises(PackageNotFoundException):
         assert cache.get('abc >=1.0.1')
@@ -63,17 +63,17 @@ def test_remove(tmp_path):
         'package': package.to_dict()
     }
 
-    assert len(cache.list()) == 0
+    assert len(cache.find()) == 0
 
     cache.update(meta, None)
 
-    assert len(cache.list()) == 1
-    assert cache.list()[0].ident == package.ident
+    assert len(cache.find()) == 1
+    assert cache.find()[0].ident == package.ident
 
     package = cache.get('abc')
     cache.remove(package)
 
-    assert len(cache.list()) == 0
+    assert len(cache.find()) == 0
 
     with pytest.raises(PackageNotFoundException):
         assert cache.get('abc')
@@ -94,11 +94,11 @@ def test_update_compatible(tmp_path):
         'package': package.to_dict()
     }
 
-    assert len(cache.list()) == 0
+    assert len(cache.find()) == 0
 
     cache.update(meta, None)
 
-    assert len(cache.list()) == 1
+    assert len(cache.find()) == 1
 
     with pytest.raises(PackageNotFoundException):
         assert cache.get('abc >=1.0.1')
@@ -126,11 +126,11 @@ def test_update_incompatible(tmp_path):
         'package': package.to_dict()
     }
 
-    assert len(cache.list()) == 0
+    assert len(cache.find()) == 0
 
     cache.update(meta, None)
 
-    assert len(cache.list()) == 0
+    assert len(cache.find()) == 0
 
     with pytest.raises(CompatiblePackageNotFoundException):
         cache.get('abc')
@@ -159,7 +159,7 @@ def test_update_multiple_compatible(tmp_path):
 
         cache.update(meta, None)
 
-    assert len(cache.list()) == 5
+    assert len(cache.find()) == 5
     assert cache.get('abc').version == '5.0.0'
 
     with pytest.raises(PackageNotFoundException):
@@ -185,7 +185,7 @@ def test_update_multiple_incompatible(tmp_path):
 
         cache.update(meta, None)
 
-    assert len(cache.list()) == 0
+    assert len(cache.find()) == 0
 
     with pytest.raises(CompatiblePackageNotFoundException):
         cache.get('abc')
