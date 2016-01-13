@@ -15,6 +15,8 @@ class InvalidPathPartsException(Exception): pass
 
 
 def constraint_match(constraint, name, version=None):
+    if not constraint:
+        return True
     m = re.match(r'([a-z_]+)\s*([><=][=]?\d+\.\d+\.\d+)?', constraint)
     if not m:
         return False

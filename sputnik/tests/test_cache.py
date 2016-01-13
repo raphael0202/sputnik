@@ -6,6 +6,27 @@ from ..package_list import CompatiblePackageNotFoundException, \
                            PackageNotFoundException
 
 
+def test_list(tmp_path):
+    cache = Cache('test', '1.0.0', tmp_path)
+
+    for i in range(1, 5):
+        package = PackageStub({'name': 'abc', 'version': '%d.0.0' % i})
+        cache.update({
+            'archive': ['archive.gz', None],
+            'package': package.to_dict()
+        }, None)
+
+    assert len(cache.list('xyz')) == 0
+
+    assert len(cache.list()) == 4
+    assert len(cache.list('')) == 4
+
+    assert len(cache.list('abc')) == 4
+    assert len(cache.list('abc ==1.0.0')) == 1
+    assert len(cache.list('abc ==0.1.0')) == 0
+    assert len(cache.list('abc>=1.9.0')) == 3
+
+
 def test_update(tmp_path):
     cache = Cache('test', '1.0.0', tmp_path)
     package = PackageStub({'name': 'abc', 'version': '1.0.0'})

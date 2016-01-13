@@ -54,15 +54,12 @@ class PackageList(object):
             self._packages[package.ident] = package
 
     def get(self, package_string):
-        candidates = []
-        for package in self._packages.values():
-            if util.constraint_match(package_string, package.name, package.version):
-                candidates.append(package)
+        candidates = sorted(self.list_all(package_string),
+                            key=lambda c: (self.is_compatible(c), c))
 
         if not candidates:
             raise PackageNotFoundException(package_string)
 
-        candidates.sort(key=lambda c: (self.is_compatible(c), c))
         package = candidates[-1]
 
         if not self.is_compatible(package):
@@ -72,25 +69,13 @@ class PackageList(object):
 
         return package
 
-    def list(self, package_string=None, check_compatibility=True):
-        def c(value):
-            if check_compatibility:
-                return value
-            return True
-
-        if not package_string:
-            return [p for p in self._packages.values() if c(self.is_compatible(p))]
-
-        candidates = []
-        for package in self._packages.values():
-            if util.constraint_match(package_string, package.name, package.version):
-                if c(self.is_compatible(package)):
-                    candidates.append(package)
-
-        return candidates
+    def list(self, package_string=None):
+        return [p for p in self.list_all(package_string) if self.is_compatible(p)]
 
     def list_all(self, package_string=None):
-        return self.list(package_string, check_compatibility=False)
+        for package in self._packages.values():
+            if util.constraint_match(package_string, package.name, package.version):
+                yield package
 
     def purge(self):
         self.logger.info('purging %s', self.__class__.__name__)
