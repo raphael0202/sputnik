@@ -5,7 +5,7 @@ import shutil
 import semver
 
 from . import default
-from .package_string import PackageString
+from . import util
 from .package_stub import PackageStub
 
 
@@ -55,18 +55,15 @@ class PackageList(object):
 
     def get(self, package_string):
         candidates = []
-        query = PackageString(package_string)
-
         for package in self._packages.values():
-            ps = PackageString(package=package)
-            if query.match(ps):
-                candidates.append(ps)
+            if util.constraint_match(package_string, package.name, package.version):
+                candidates.append(package)
 
         if not candidates:
             raise PackageNotFoundException(package_string)
 
-        candidates.sort(key=lambda c: (self.is_compatible(c.package), c))
-        package = candidates[-1].package
+        candidates.sort(key=lambda c: (self.is_compatible(c), c))
+        package = candidates[-1]
 
         if not self.is_compatible(package):
             raise CompatiblePackageNotFoundException(
@@ -85,12 +82,10 @@ class PackageList(object):
             return [p for p in self._packages.values() if c(self.is_compatible(p))]
 
         candidates = []
-        query = PackageString(package_string)
-
         for package in self._packages.values():
-            ps = PackageString(package=package)
-            if query.match(ps) and c(self.is_compatible(ps.package)):
-                candidates.append(ps.package)
+            if util.constraint_match(package_string, package.name, package.version):
+                if c(self.is_compatible(package)):
+                    candidates.append(package)
 
         return candidates
 

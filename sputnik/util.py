@@ -14,6 +14,14 @@ from .__about__ import __version__
 class InvalidPathPartsException(Exception): pass
 
 
+def constraint_match(constraint, name, version=None):
+    m = re.match(r'([a-z_]+)\s*([><=][=]?\d+\.\d+\.\d+)?', constraint)
+    if not m:
+        return False
+    c_name, c_version = m.groups()
+    return c_name == name and (not c_version or semver.match(version, c_version))
+
+
 def get_path(*path_parts, **kwargs):
     sep = kwargs.pop('sep', os.path.sep)
     if any(p for p in path_parts if '/' in p or '\\' in p):

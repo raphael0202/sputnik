@@ -1,11 +1,12 @@
 import io
-import types
 import contextlib
 from collections import OrderedDict
 try:
     from types import TypeType as type
 except ImportError:
     pass
+
+import semver
 
 from . import util
 
@@ -68,3 +69,28 @@ class PackageStub(object):
                 raise default
             else:
                 yield default
+
+    def _error_on_different_name(self, other):
+        if self.name != other.name:
+            raise Exception('name mismatch: %s != %s' % (self.name, other.name))
+
+    def __gt__(self, other):
+        self._error_on_different_name(other)
+        return semver.compare(self.version, other.version) > 0
+
+    def __lt__(self, other):
+        self._error_on_different_name(other)
+        return semver.compare(self.version, other.version) < 0
+
+    def __eq__(self, other):
+        self._error_on_different_name(other)
+        return semver.compare(self.version, other.version) == 0
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __ge__(self, other):
+        return self.__gt__(other) or self.__eq__(other)
+
+    def __le__(self, other):
+        return self.__lt__(other) or self.__eq__(other)
