@@ -16,8 +16,13 @@ from .index import Index
 def install(app_name,
             app_version,
             package_name,
-            data_path=default.data_path,
-            repository_url=default.repository_url):
+            data_path=None,
+            repository_url=None):
+
+    if data_path is None:
+        data_path = default.data_path
+    if repository_url is None:
+        repository_url = default.repository_url
 
     package_name = expand_path(package_name)
     data_path = expand_path(data_path)
@@ -42,8 +47,11 @@ def install(app_name,
     return Package(path=path)
 
 
-def build(package_path=default.build_package_path,
+def build(package_path=None,
           archive_path=None):
+
+    if package_path is None:
+        package_path = build_package_path
 
     recipe = Recipe(expand_path(package_path))
     return recipe.build(expand_path(archive_path or package_path))
@@ -52,7 +60,10 @@ def build(package_path=default.build_package_path,
 def remove(app_name,
            app_version,
            package_string,
-           data_path=default.data_path):
+           data_path=None):
+
+    if data_path is None:
+        data_path = default.data_path
 
     pool = Pool(app_name, app_version, expand_path(data_path))
     packages = pool.find(package_string)
@@ -62,9 +73,16 @@ def remove(app_name,
 
 def search(app_name,
            app_version,
-           search_string=default.search_string,
-           data_path=default.data_path,
-           repository_url=default.repository_url):
+           search_string=None,
+           data_path=None,
+           repository_url=None):
+
+    if search_string is None:
+        search_string = default.search_string
+    if data_path is None:
+        data_path = default.data_path
+    if repository_url is None:
+        repository_url = default.repository_url
 
     # TODO make it work without data path?
     index = Index(app_name, app_version, data_path, repository_url)
@@ -78,10 +96,19 @@ def search(app_name,
 
 def find(app_name,
          app_version,
-         package_string=default.find_package_string,
-         meta=default.find_meta,
-         cache=default.find_cache,
-         data_path=default.data_path):
+         package_string=None,
+         meta=None,
+         cache=None,
+         data_path=None):
+
+    if package_string is None:
+        package_string = default.find_package_string
+    if meta is None:
+        meta = default.find_meta
+    if cache is None:
+        cache = default.find_cache
+    if data_path is None:
+        data_path = default.data_path
 
     cls = cache and Cache or Pool
     obj = cls(app_name, app_version, expand_path(data_path))
@@ -94,8 +121,13 @@ def find(app_name,
 def upload(app_name,
            app_version,
            package_path,
-           data_path=default.data_path,
-           repository_url=default.repository_url):
+           data_path=None,
+           repository_url=None):
+
+    if data_path is None:
+        data_path = default.data_path
+    if repository_url is None:
+        repository_url = default.repository_url
 
     # TODO make it work without data path?
     index = Index(app_name, app_version, data_path, repository_url)
@@ -104,8 +136,13 @@ def upload(app_name,
 
 def update(app_name,
            app_version,
-           data_path=default.data_path,
-           repository_url=default.repository_url):
+           data_path=None,
+           repository_url=None):
+
+    if data_path is None:
+        data_path = default.data_path
+    if repository_url is None:
+        repository_url = default.repository_url
 
     index = Index(app_name, app_version, expand_path(data_path), repository_url)
     index.update()
@@ -114,7 +151,10 @@ def update(app_name,
 def package(app_name,
             app_version,
             package_string,
-            data_path=default.data_path):
+            data_path=None):
+
+    if data_path is None:
+        data_path = default.data_path
 
     pool = Pool(app_name, app_version, expand_path(data_path))
     return pool.get(package_string)
@@ -123,7 +163,10 @@ def package(app_name,
 def files(app_name,
           app_version,
           package_string,
-          data_path=default.data_path):
+          data_path=None):
+
+    if data_path is None:
+        data_path = default.data_path
 
     if os.path.isfile(package_string):
         obj = Archive(package_string)
@@ -139,9 +182,16 @@ def files(app_name,
 
 def purge(app_name,
           app_version,
-          cache=False,
-          pool=False,
-          data_path=default.data_path):
+          cache=None,
+          pool=None,
+          data_path=None):
+
+    if cache is None:
+        cache = default.purge_cache
+    if pool is None:
+        pool = default.purge_pool
+    if data_path is None:
+        data_path = default.data_path
 
     data_path = expand_path(data_path)
 

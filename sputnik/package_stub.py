@@ -1,4 +1,5 @@
 import io
+import json
 import contextlib
 from collections import OrderedDict
 try:
@@ -69,6 +70,20 @@ class PackageStub(object):
                 raise default
             else:
                 yield default
+
+    def load_json(self, path_parts, mode='r', encoding='utf8', default=IOError):
+        if self.has_file(*path_parts):
+            with io.open(self.file_path(*path_parts),
+                         mode=mode, encoding=encoding) as f:
+                return json.load(f)
+
+        else:
+            if isinstance(default, type) and issubclass(default, Exception):
+                raise default(self.file_path(*path_parts))
+            elif isinstance(default, Exception):
+                raise default
+            else:
+                return default
 
     def _error_on_different_name(self, other):
         if self.name != other.name:
