@@ -2,7 +2,7 @@ import os
 
 from . import default
 from .pool import Pool
-from .util import expand_path, json_print
+from .util import expand_path, json_print, default_data_path
 from .package import Package
 from .recipe import Recipe
 from .archive import Archive
@@ -20,7 +20,7 @@ def install(app_name,
             repository_url=None):
 
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
     if repository_url is None:
         repository_url = default.repository_url
 
@@ -63,7 +63,7 @@ def remove(app_name,
            data_path=None):
 
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
 
     pool = Pool(app_name, app_version, expand_path(data_path))
     packages = pool.find(package_string)
@@ -80,7 +80,7 @@ def search(app_name,
     if search_string is None:
         search_string = default.search_string
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
     if repository_url is None:
         repository_url = default.repository_url
 
@@ -108,7 +108,7 @@ def find(app_name,
     if cache is None:
         cache = default.find_cache
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
 
     cls = cache and Cache or Pool
     obj = cls(app_name, app_version, expand_path(data_path))
@@ -125,7 +125,7 @@ def upload(app_name,
            repository_url=None):
 
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
     if repository_url is None:
         repository_url = default.repository_url
 
@@ -140,7 +140,7 @@ def update(app_name,
            repository_url=None):
 
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
     if repository_url is None:
         repository_url = default.repository_url
 
@@ -154,7 +154,7 @@ def package(app_name,
             data_path=None):
 
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
 
     pool = Pool(app_name, app_version, expand_path(data_path))
     return pool.get(package_string)
@@ -166,7 +166,7 @@ def files(app_name,
           data_path=None):
 
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
 
     if os.path.isfile(package_string):
         obj = Archive(package_string)
@@ -191,7 +191,7 @@ def purge(app_name,
     if pool is None:
         pool = default.purge_pool
     if data_path is None:
-        data_path = util.default_data_path(app_name)
+        data_path = default_data_path(app_name)
 
     data_path = expand_path(data_path)
 
