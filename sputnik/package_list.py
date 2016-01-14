@@ -36,7 +36,7 @@ class PackageList(object):
 
     def packages(self):
         if not os.path.exists(self.path):
-            os.mkdir(self.path)
+            os.makedirs(self.path)
 
         for path in os.listdir(self.path):
             if path.endswith('.tmp'):
@@ -96,14 +96,14 @@ class PackageList(object):
 
     def remove(self, package):
         if not os.path.isdir(package.path):
-            raise Exception("not installed")
+            raise Exception('Package not correctly installed: %s' % package.ident)
 
         # cleanup remove
         if os.path.exists(package.path):
-            self.logger.info('pending remove %s', package.path)
+            self.logger.info('pending remove %s', package.ident)
             tmp = package.path + '.tmp'
             shutil.move(package.path, tmp)
-            self.logger.info('remove %s', package.path)
+            self.logger.info('remove %s', package.ident)
             shutil.rmtree(tmp)
 
         self.load()
