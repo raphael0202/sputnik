@@ -2,7 +2,7 @@
 set -e
 
 if [ ! -d ".build" ]; then
-    $1 -m virtualenv .build --python $1
+    virtualenv .build --python $1
 fi
 
 if [ -d ".build/bin" ]; then

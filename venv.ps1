@@ -11,11 +11,11 @@ if(!(Test-Path -Path ".build"))
 {
     if($compiler -eq "mingw32")
     {
-        $python -m virtualenv .build --system-site-packages --python $python
+        virtualenv .build --system-site-packages --python $python
     }
     else
     {
-        $python -m virtualenv .build --python $python
+        virtualenv .build --python $python
     }
 
     if($compiler)
