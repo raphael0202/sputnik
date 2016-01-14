@@ -12,6 +12,18 @@ from .__about__ import __version__
 
 
 class InvalidPathPartsException(Exception): pass
+class InvalidAppNameException(Exception): pass
+class UnknownAppNameException(Exception): pass
+
+
+def default_data_path(app_name):
+    if app_name is None:
+        raise InvalidAppNameException(app_name)
+    try:
+        mod = __import__(app_name, globals(), locals(), [], 0)
+    except ImportError:
+        raise UnknownAppNameException(app_name)
+    return os.path.abspath(os.path.join(os.path.dirname(mod.__file__), 'data'))
 
 
 def constraint_match(constraint, name, version=None):

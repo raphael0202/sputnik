@@ -186,10 +186,8 @@ def get_parser():
     parser.add_argument('--version',
         help='app version')
     parser.add_argument('--data-path',
-        default=default.data_path,
         help='data storage path')
     parser.add_argument('--repository-url',
-        default=default.repository_url,
         help='package repository path')
     parser.add_argument('--log-level',
         default='info',
