@@ -5,7 +5,7 @@ import csv
 def add_path(mod_name, path):
     record_path = get_record_path(mod_name)
     if record_path:
-        full_path = os.path.join(mod_name, path)
+        full_path = '/'.join(mod_name, path)
         if not record_has_path(record_path, full_path):
             record_add_path(record_path, full_path)
 
@@ -30,7 +30,7 @@ def get_record_path(mod_name):
 def record_has_path(record_path, path):
     with open(record_path) as f:
         for row in csv.reader(f):
-            if row[0].split(os.path.sep) == path.split(os.path.sep):
+            if row[0] == path:
                 return True
     return False
 
