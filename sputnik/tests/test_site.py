@@ -55,10 +55,10 @@ def test_record_add_path(package_name):
     record_path = site.get_record_path(package_name)
     assert record_path
 
-    assert site.record_has_path(record_path, '%s/__init__.py' % package_name)
-    assert not site.record_has_path(record_path, '%s/data' % package_name)
-    site.record_add_path(record_path, '%s/data' % package_name)
-    assert site.record_has_path(record_path, '%s/data' % package_name)
+    assert site.record_has_path(record_path, os.path.join(package_name, '__init__.py'))
+    assert not site.record_has_path(record_path, os.path.join(package_name, 'data'))
+    site.record_add_path(record_path, os.path.join(package_name, 'data'))
+    assert site.record_has_path(record_path, os.path.join(package_name, 'data'))
 
     pip_uninstall(package_name)
     assert not os.path.exists(path)
@@ -77,10 +77,10 @@ def test_add_path(package_name):
     assert not os.path.exists(data_path)
     os.mkdir(data_path)
 
-    assert site.record_has_path(record_path, '%s/__init__.py' % package_name)
-    assert not site.record_has_path(record_path, '%s/data' % package_name)
-    site.add_path(package_name, 'data')
-    assert site.record_has_path(record_path, '%s/data' % package_name)
+    assert site.record_has_path(record_path, os.path.join(package_name, '__init__.py'))
+    assert not site.record_has_path(record_path, os.path.join(package_name, 'data'))
+    site.record_add_path(record_path, os.path.join(package_name, 'data'))
+    assert site.record_has_path(record_path, os.path.join(package_name, 'data'))
 
     pip_uninstall(package_name)
     assert not os.path.exists(path)
