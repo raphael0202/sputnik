@@ -130,7 +130,7 @@ my_model/package.json:
 }
 ```
 
-This means that this package has version ```2.0.0``` and requires version ```0.6.1``` of ```my_library```, to be installed/used.
+This means that this package has version ```2.0.0``` and requires version ```0.6.1``` of ```my_library```, to be installed/used. It is also possible to list multiple compatibility constraints, such as ```>=0.6.0,<0.7.0```.
 
 Let's get another Sputnik reference - now passing our library name and version to it - and build/install the package:
 

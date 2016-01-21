@@ -25,6 +25,16 @@ def test_build_and_check_archive(tmp_path, sample_package_path):
 def test_archive_is_compatible(tmp_path, tmp_path2, sample_package_path):
     recipe = Recipe(sample_package_path)
     archive = recipe.build(tmp_path)
+    pool = Pool(None, None, tmp_path2)
+    assert pool.is_compatible(archive)
+
+    recipe = Recipe(sample_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('test', None, tmp_path2)
+    assert pool.is_compatible(archive)
+
+    recipe = Recipe(sample_package_path)
+    archive = recipe.build(tmp_path)
     pool = Pool('test', '1.0.0', tmp_path2)
     assert pool.is_compatible(archive)
 
@@ -34,6 +44,48 @@ def test_archive_is_compatible(tmp_path, tmp_path2, sample_package_path):
     assert not pool.is_compatible(archive)
 
     recipe = Recipe(sample_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('xxx', None, tmp_path2)
+    assert not pool.is_compatible(archive)
+
+    recipe = Recipe(sample_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('xxx', '1.0.0', tmp_path2)
+    assert not pool.is_compatible(archive)
+
+
+def test_archive_is_compatible_list(tmp_path, tmp_path2, multi_version_package_path):
+    recipe = Recipe(multi_version_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool(None, None, tmp_path2)
+    assert pool.is_compatible(archive)
+
+    recipe = Recipe(multi_version_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('test', None, tmp_path2)
+    assert pool.is_compatible(archive)
+
+    recipe = Recipe(multi_version_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('test', '0.100.2', tmp_path2)
+    assert pool.is_compatible(archive)
+
+    recipe = Recipe(multi_version_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('test', '0.99.99', tmp_path2)
+    assert not pool.is_compatible(archive)
+
+    recipe = Recipe(multi_version_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('test', '0.101.0', tmp_path2)
+    assert not pool.is_compatible(archive)
+
+    recipe = Recipe(multi_version_package_path)
+    archive = recipe.build(tmp_path)
+    pool = Pool('xxx', None, tmp_path2)
+    assert not pool.is_compatible(archive)
+
+    recipe = Recipe(multi_version_package_path)
     archive = recipe.build(tmp_path)
     pool = Pool('xxx', '1.0.0', tmp_path2)
     assert not pool.is_compatible(archive)

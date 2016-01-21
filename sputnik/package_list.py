@@ -83,16 +83,19 @@ class PackageList(object):
             self.remove(package)
 
     def is_compatible(self, package):
-        if self.app_name and package.compatibility:
-            compatible_version = package.compatibility.get(self.app_name)
-            if not compatible_version:
-                return False
+        def c(app_version, version_match):
+            if app_version:
+                return semver.match(app_version, version_match.strip())
+            return True
 
-            if self.app_version:
-                return semver.match(self.app_version, compatible_version)
+        if not package.compatibility:
+            return True
 
-            return False
-        return True
+        compatibility = package.compatibility.get(self.app_name)
+        if not compatibility:
+            return not self.app_name
+
+        return all(c(self.app_version, v) for v in compatibility.split(','))
 
     def remove(self, package):
         if not os.path.isdir(package.path):
