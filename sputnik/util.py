@@ -43,17 +43,11 @@ def get_path(*path_parts, **kwargs):
     return sep.join(path_parts)
 
 
-def parse_version(string):
-    if string:
-        # raises ValueError when invalid
-        return '.'.join(semver.parse(string))
-
-
 def user_agent(name, version):
     uname = platform.uname()
     user_agent_vars = [
         ('Sputnik', __version__),
-        (name, parse_version(version)),
+        (name, version),
         (platform.python_implementation(), platform.python_version()),
         (platform.uname()[0], uname[2]),
         ('64bits', sys.maxsize > 2**32)]
