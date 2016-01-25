@@ -1,5 +1,6 @@
 import os
 import codecs
+import json
 try:
     from http.cookiejar import MozillaCookieJar
 except ImportError:
@@ -35,10 +36,9 @@ class Session(object):
 
     def open(self, request, default_charset=None):
         request.add_header('User-Agent', util.user_agent(self.app_name, self.app_version))
-        if self.app_version:
-            request.add_header('X-Sputnik-Name', self.app_name)
-        if self.app_version:
-            request.add_header('X-Sputnik-Version', self.app_version)
+
+        system_string = json.dumps(util.system_info(self.app_name, self.app_version))
+        request.add_header('X-Sputnik-System', system_string)
 
         r = self.opener.open(request)
 

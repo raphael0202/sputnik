@@ -55,6 +55,17 @@ def user_agent(name, version):
     return ' '.join(['%s/%s' % (k, v) for k, v in user_agent_vars if k])
 
 
+def system_info(name, version):
+    return {'app_name': name,
+            'app_version': version,
+            'sputnik_version': __version__,
+            'py': platform.python_implementation(),
+            'py_version': platform.python_version(),
+            'os': platform.uname()[0],
+            'os_version': platform.uname()[2],
+            'bits': 64 if sys.maxsize > 2**32 else 32}
+
+
 def expand_path(path):
     return path and os.path.expanduser(path) or path
 
