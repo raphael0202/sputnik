@@ -6,12 +6,12 @@ from setuptools import setup, find_packages
 base_dir = os.path.dirname(__file__)
 
 about = {}
-with open(os.path.join(base_dir, "sputnik", "__about__.py")) as f:
+with open(os.path.join(base_dir, "sputnik", "about.py")) as f:
     exec(f.read(), about)
 
 
 setup(
-    name=about['__title__'],
+    name=about['__name__'],
     version=about['__version__'],
     description=about['__summary__'],
     url=about['__uri__'],

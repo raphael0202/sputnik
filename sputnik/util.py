@@ -8,7 +8,7 @@ import sys
 
 import semver
 
-from .__about__ import __version__
+from .about import __version__
 
 
 class InvalidPathPartsException(Exception): pass
