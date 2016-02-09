@@ -1,0 +1,19 @@
+{
+    "build": {
+        "sdist": [
+            "python pip-clear.py",
+            "pip install -r requirements.txt",
+            "python setup.py sdist"
+        ],
+        "install": [
+            "python pip-clear.py",
+            "pip install source.tar.gz"
+        ]
+    },
+    "test": {
+        "dependencies": ["boto"],
+        "after": ["install"],
+        "package": "sputnik",
+        "args": "--tb=native"
+    }
+}
