@@ -84,6 +84,7 @@ class PackageList(object):
 
     def is_compatible(self, package):
         def c(app_version, version_match):
+            # TODO allow app_version to be in compact form (e.g., 0.1 instead of 0.1.0)
             if app_version:
                 return semver.match(app_version, version_match.strip())
             return True
