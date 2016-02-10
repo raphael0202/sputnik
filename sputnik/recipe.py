@@ -42,13 +42,14 @@ class Recipe(PackageStub):  # package archive
             filename = util.archive_filename(self.name, self.version, suffix=True)
             archive_path = os.path.join(archive_path, filename)
 
-        with ArchiveWriter(archive_path, base_path=self.base_path) as archive:
-            self.logger.info("build %s", archive.path)
+        archive = ArchiveWriter(archive_path, base_path=self.base_path)
+        self.logger.info("build %s", archive.path)
 
-            for include in self.include:
-                for path in glob(os.path.join(self.recipe_path, os.path.sep.join(include))):
-                    if os.path.isfile(path):
-                        archive.add(path)
-            archive.add_json('package', self.to_dict())
+        for include in self.include:
+            for path in glob(os.path.join(self.recipe_path, os.path.sep.join(include))):
+                if os.path.isfile(path):
+                    archive.add(path)
+        archive.add_json('package', self.to_dict())
+        archive.close()
 
         return Archive(archive_path)

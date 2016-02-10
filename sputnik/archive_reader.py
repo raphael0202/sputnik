@@ -52,26 +52,28 @@ class ArchiveReader(object):
 
                 checksum = getattr(hashlib, entry['checksum'][0])()
 
-                with gzip.GzipFile(fileobj=self.archive) as gz:
+                gz = gzip.GzipFile(fileobj=self.archive)
 
-                    filename = os.path.join(extract_path, path)
-                    util.makedirs(filename)
-                    with io.open(filename, 'wb') as f:
+                filename = os.path.join(extract_path, path)
+                util.makedirs(filename)
+                with io.open(filename, 'wb') as f:
 
-                        bytes_read = 0
-                        while True:
-                            chunk = gz.read(min(size - bytes_read, default.CHUNK_SIZE))
-                            if not chunk:
-                                break
+                    bytes_read = 0
+                    while True:
+                        chunk = gz.read(min(size - bytes_read, default.CHUNK_SIZE))
+                        if not chunk:
+                            break
 
-                            bytes_read += len(chunk)
+                        bytes_read += len(chunk)
 
-                            f.write(chunk)
-                            checksum.update(chunk)
+                        f.write(chunk)
+                        checksum.update(chunk)
 
-                            # callback for progress tracking
-                            if cb:
-                                cb(bytes_read)
+                        # callback for progress tracking
+                        if cb:
+                            cb(bytes_read)
+
+                gz.close()
 
                 # checksums from bytes read and meta data should match
                 if checksum.hexdigest() != entry['checksum'][1]:

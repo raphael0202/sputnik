@@ -174,8 +174,8 @@ def files(app_name,
         pool = Pool(app_name, app_version, expand_path(data_path))
         obj = pool.get(package_string)
 
-    res = {os.path.sep.join(f['path']): {'checksum': f['checksum'], 'size': f['size']}
-           for f in obj.manifest}
+    res = dict([(os.path.sep.join(f['path']), {'checksum': f['checksum'], 'size': f['size']})
+                for f in obj.manifest])
     json_print({obj.ident: res})
     return res
 

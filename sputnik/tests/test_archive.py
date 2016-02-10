@@ -23,8 +23,9 @@ def path_content(path, base_path=None):
 def test_create_and_check(tmp_path, sample_package_path):
     archive_path = os.path.join(tmp_path, 'test.sputnik')
 
-    with ArchiveWriter(archive_path, base_path=sample_package_path) as f:
-        f.add_path(sample_package_path)
+    f = ArchiveWriter(archive_path, base_path=sample_package_path)
+    f.add_path(sample_package_path)
+    f.close()
 
     assert os.path.exists(archive_path)
 
@@ -36,8 +37,9 @@ def test_create_and_check(tmp_path, sample_package_path):
 def test_create_and_read(tmp_path, sample_package_path):
     archive_path = os.path.join(tmp_path, 'test.sputnik')
 
-    with ArchiveWriter(archive_path, base_path=sample_package_path) as f:
-        f.add_path(sample_package_path)
+    f = ArchiveWriter(archive_path, base_path=sample_package_path)
+    f.add_path(sample_package_path)
+    f.close()
 
     assert os.path.exists(archive_path)
 
@@ -48,10 +50,9 @@ def test_create_and_read(tmp_path, sample_package_path):
 def test_create_and_checksum(tmp_path, sample_package_path):
     archive_path = os.path.join(tmp_path, 'test.sputnik')
 
-    with ArchiveWriter(archive_path,
-                       base_path=sample_package_path,
-                       hash_func=hashlib.md5) as f:
-        f.add_path(sample_package_path)
+    f = ArchiveWriter(archive_path, base_path=sample_package_path)
+    f.add_path(sample_package_path)
+    f.close()
 
     assert os.path.exists(archive_path)
 
@@ -65,8 +66,9 @@ def test_create_and_checksum(tmp_path, sample_package_path):
 def test_create_and_extract(tmp_path, tmp_path2, sample_package_path):
     archive_path = os.path.join(tmp_path, 'test.sputnik')
 
-    with ArchiveWriter(archive_path, base_path=sample_package_path) as f:
-        f.add_path(sample_package_path)
+    f = ArchiveWriter(archive_path, base_path=sample_package_path)
+    f.add_path(sample_package_path)
+    f.close()
 
     assert os.path.exists(archive_path)
 
@@ -88,8 +90,9 @@ def test_create_and_extract(tmp_path, tmp_path2, sample_package_path):
 def test_create_with_index(tmp_path, sample_package_path):
     archive_path = os.path.join(tmp_path, 'test.sputnik')
 
-    with ArchiveWriter(archive_path, base_path=sample_package_path) as f:
-        f.add_path(os.path.join(sample_package_path, 'data'))
+    f = ArchiveWriter(archive_path, base_path=sample_package_path)
+    f.add_path(os.path.join(sample_package_path, 'data'))
+    f.close()
 
     assert os.path.exists(archive_path)
 
@@ -108,8 +111,9 @@ def test_create_without_base_path(tmp_path, sample_package_path):
 
     os.chdir(sample_package_path)
 
-    with ArchiveWriter(archive_path) as f:
-        f.add_path('data')
+    f = ArchiveWriter(archive_path)
+    f.add_path('data')
+    f.close()
 
     assert os.path.exists(archive_path)
 

@@ -163,8 +163,8 @@ def test_new_archive_files(tmp_path, sample_package_path):
     archive = recipe.build(tmp_path)
 
     assert archive.manifest
-    assert {m['path'] for m in archive.manifest} == \
-           {('data', 'xyz.model'), ('data/xyz.json')}
+    assert set([m['path'] for m in archive.manifest]) == \
+           set([('data', 'xyz.model'), ('data/xyz.json')])
 
 
 def test_archive_files(tmp_path, sample_package_path):
@@ -173,8 +173,8 @@ def test_archive_files(tmp_path, sample_package_path):
     archive = Archive(new_archive.path)
 
     assert archive.manifest
-    assert {tuple(m['path']) for m in archive.manifest} == \
-           {('data', 'xyz.model'), ('data', 'xyz.json')}
+    assert set([tuple(m['path']) for m in archive.manifest]) == \
+           set([('data', 'xyz.model'), ('data', 'xyz.json')])
 
 
 def test_dir_package(sample_package_path):

@@ -1,7 +1,6 @@
 import io
 import json
 import contextlib
-from collections import OrderedDict
 try:
     from types import TypeType as type
 except ImportError:
@@ -41,7 +40,7 @@ class PackageStub(object):
         keys = keys or []
         if hasattr(self, 'is_valid'):
             self.is_valid()
-        return OrderedDict([
+        return dict([
             (k, getattr(self, k))
             for k in self.keys
             if not keys or k in keys])
