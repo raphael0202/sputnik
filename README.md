@@ -16,6 +16,12 @@ Sputnik is available from [PyPI](https://pypi.python.org/pypi/sputnik) via ```pi
 pip install sputnik
 ```
 
+and via ```conda```
+
+```
+conda install sputnik
+```
+
 ## Build a package
 
 Add a ```package.json``` file with following JSON to a directory ```sample``` and add some files in ```sample/data``` that you would like to have packaged, e.g., ```sample/data/model```. See a sample layout [here](https://github.com/spacy-io/sputnik/tree/master/sample).
