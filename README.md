@@ -6,7 +6,7 @@ Sputnik is a library for managing data packages for another library, e.g., model
 
 It also comes with a command-line interface, run ```sputnik --help``` or ```python -m sputnik --help``` for assistance.
 
-Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ```semver```) and is tested against python 2.7, 3.4 and 3.5 on Linux, OSX and Windows.
+Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ```semver```) and is compatible with python >=2.6 and >=3.3 on Linux, OSX and Windows.
 
 ## Installation
 
@@ -101,7 +101,7 @@ sputnik.purge(<app_name>, <app_version>, data_path='packages')
 
 ## Versioning
 
-```install```, ```find```, ```package```, ```files```, ```search``` and ```remove``` commands accept version strings that follow [semantic versioning](http://semver.org/), e.g.:
+```install```, ```find```, ```package```, ```files```, ```search``` and ```remove``` commands accept version constraint strings that follow [semantic versioning](http://semver.org/), e.g.:
 
 ```
 sputnik.install(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
@@ -112,9 +112,11 @@ sputnik.files(<app_name>, <app_version>, 'my_model <=1.0.0', data_path='packages
 sputnik.remove(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
 ```
 
+Multiple version constraints can be concatenated with commas, e.g., ```my_model >=1.0.0,<2.0.0```. The constraint expression is satisfied if all individual constraints are satisfied.
+
 ## Compatibility
 
-Sputnik ensures compatibility with an app's name and version. An app in this context is the project that imports Sputnik (e.g., name/version of a library) using [semantic versioning](http://semver.org/). Let's see an example where this is useful:
+Sputnik allows to specify compatibility of a package with an app's name to let an index server provide app-specific views on installable packages. An app in this context is the project that imports Sputnik (e.g., ```my_library```).
 
 my_model/package.json:
 ```
@@ -125,30 +127,9 @@ my_model/package.json:
   "version": "2.0.0",
   "license": "public domain",
   "compatibility": {
-    "my_library": ">=0.6.1"
+    "my_library": null
   }
 }
 ```
 
-This means that this package has version ```2.0.0``` and requires version ```0.6.1``` of ```my_library```, to be installed/used. It is also possible to list multiple compatibility constraints, such as ```>=0.6.0,<0.7.0```.
-
-Let's get another Sputnik reference - now passing our library name and version to it - and build/install the package:
-
-```
-archive = sputnik.build('my_library', '0.6.0', 'my_model', data_path='packages')
-sputnik.install('my_library', '0.6.0', archive.path, data_path='packages')
-```
-
-This should throw an exception as it requires version ```0.6.1``` of our library:
-
-```
-sputnik.archive.PackageNotCompatibleException:
-running my_library 0.6.0 but requires {'my_library': '>=0.6.1'}
-```
-
-Upgrading our library to version ```0.6.1```:
-
-```
-archive = sputnik.build('my_library', '0.6.1', 'my_model', data_path='packages')
-sputnik.install('my_library', '0.6.1', archive.path, data_path='packages')
-```
+Currently no compatibility checks are performed within Sputnik code.
