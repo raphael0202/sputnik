@@ -2,8 +2,6 @@ import os
 import logging
 import shutil
 
-import semver
-
 from . import default
 from . import util
 from .package_stub import PackageStub

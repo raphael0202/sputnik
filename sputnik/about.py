@@ -3,7 +3,7 @@
 # https://python-packaging-user-guide.readthedocs.org/en/latest/single_source_version/
 # https://github.com/pypa/warehouse/blob/master/warehouse/__about__.py
 
-__name__ = 'sputnik'
+__title__ = 'sputnik'
 __version__ = '0.8.2'
 __summary__ = 'Sputnik data package manager library'
 __uri__ = 'https://github.com/henningpeters/sputnik'

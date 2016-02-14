@@ -51,7 +51,7 @@ def build(package_path=None,
           archive_path=None):
 
     if package_path is None:
-        package_path = build_package_path
+        package_path = default.build_package_path
 
     recipe = Recipe(expand_path(package_path))
     return recipe.build(expand_path(archive_path or package_path))

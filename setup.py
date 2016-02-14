@@ -11,7 +11,7 @@ with open(os.path.join(base_dir, "sputnik", "about.py")) as f:
 
 
 setup(
-    name=about['__name__'],
+    name=about['__title__'],
     version=about['__version__'],
     description=about['__summary__'],
     url=about['__uri__'],
