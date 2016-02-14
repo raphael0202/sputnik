@@ -2,7 +2,8 @@ import pytest
 
 from ..cache import Cache
 from ..package_stub import PackageStub
-from ..package_list import PackageNotFoundException
+from ..package_list import (CompatiblePackageNotFoundException,
+                            PackageNotFoundException)
 
 
 def test_list(tmp_path):
@@ -42,7 +43,7 @@ def test_update(tmp_path):
     assert len(cache.find()) == 1
     assert cache.find()[0].ident == package.ident
 
-    with pytest.raises(PackageNotFoundException):
+    with pytest.raises(CompatiblePackageNotFoundException):
         assert cache.get('abc >=1.0.1')
 
     assert cache.get('abc').ident == package.ident
@@ -99,7 +100,7 @@ def test_update_compatible(tmp_path):
 
     assert len(cache.find()) == 1
 
-    with pytest.raises(PackageNotFoundException):
+    with pytest.raises(CompatiblePackageNotFoundException):
         assert cache.get('abc >=1.0.1')
 
     assert cache.get('abc').ident == package.ident

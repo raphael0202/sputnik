@@ -13,6 +13,7 @@ from .about import __version__
 
 class InvalidPathPartsException(Exception): pass
 class InvalidAppNameException(Exception): pass
+class InvalidConstraintException(Exception): pass
 class UnknownAppNameException(Exception): pass
 
 
@@ -26,17 +27,26 @@ def default_data_path(app_name):
     return os.path.abspath(os.path.join(os.path.dirname(mod.__file__), 'data'))
 
 
-def constraint_match(constraint, name, version=None):
-    if not constraint:
-        return True
-    m = re.match(r'([a-z_]+)\s*(([><=][=]?\d+(\.\d+)*[,\s]*)*)', constraint)
+def split_package_string(string):
+    if not string:
+        string = ''
+    m = re.search(r'[^a-z_]', string)
     if not m:
-        return False
-    # TODO allow versions to be in compact form (e.g., 0.1 instead of 0.1.0)
-    c_name, c_versions = m.groups()[:2]
-    if c_name != name:
-        return False
-    return not c_versions or all(semver.match(version, v.strip()) for v in c_versions.split(','))
+        return [string, '']
+    return [string[:m.start()], string[m.start():].strip()]
+
+
+def constraint_match(constraint_string, version):
+    if not constraint_string:
+        return True
+
+    constraints = [c.strip() for c in constraint_string.split(',') if c.strip()]
+
+    for c in constraints:
+        if not re.match(r'[><=][=]?\d+(\.\d+)*', c):
+            raise InvalidConstraintException('invalid constraint: %s' % c)
+
+    return all(semver.match(version, c) for c in constraints)
 
 
 def get_path(*path_parts, **kwargs):

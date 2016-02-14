@@ -22,30 +22,28 @@ def test_no_string_match():
 
 
 def test_version_match():
-    assert constraint_match('test>=1.0.0', 'test', '1.0.0')
-    assert constraint_match('test==1.0.0', 'test', '1.0.0')
-    assert constraint_match('test<=1.0.0', 'test', '1.0.0')
-    assert constraint_match('test>1.0.0', 'test', '1.1.0')
-    assert constraint_match('test<1.0.0', 'test', '0.1.0')
+    assert constraint_match('>=1.0.0', '1.0.0')
+    assert constraint_match('==1.0.0', '1.0.0')
+    assert constraint_match('<=1.0.0', '1.0.0')
+    assert constraint_match('>1.0.0', '1.1.0')
+    assert constraint_match('<1.0.0', '0.1.0')
 
-    assert constraint_match('test >=1.0.0', 'test', '1.0.0')
-    assert constraint_match('test ==1.0.0', 'test', '1.0.0')
-    assert constraint_match('test <=1.0.0', 'test', '1.0.0')
-    assert constraint_match('test >1.0.0', 'test', '1.1.0')
-    assert constraint_match('test <1.0.0', 'test', '0.1.0')
+    assert constraint_match(' >=1.0.0', '1.0.0')
+    assert constraint_match(' ==1.0.0', '1.0.0')
+    assert constraint_match(' <=1.0.0', '1.0.0')
+    assert constraint_match(' >1.0.0', '1.1.0')
+    assert constraint_match(' <1.0.0', '0.1.0')
 
 
 def test_no_version_match():
-    assert not constraint_match('test', 'abc')
+    assert not constraint_match('>=1.0.0 , <=1.0.0', '0.1.0')
+    assert not constraint_match('==1.0.0, <=1.0.0', '0.1.0')
+    assert not constraint_match('<=1.0.0 ,<=1.0.0', '1.1.0')
+    assert not constraint_match('>1.0.0 , <=1.0.0,,', '0.1.0')
+    assert not constraint_match('<1.0.0 ,, <=1.0.0', '1.1.0')
 
-    assert not constraint_match('test>=1.0.0', 'test', '0.1.0')
-    assert not constraint_match('test==1.0.0', 'test', '0.1.0')
-    assert not constraint_match('test<=1.0.0', 'test', '1.1.0')
-    assert not constraint_match('test>1.0.0', 'test', '0.1.0')
-    assert not constraint_match('test<1.0.0', 'test', '1.1.0')
-
-    assert not constraint_match('test >=1.0.0', 'test', '0.1.0')
-    assert not constraint_match('test ==1.0.0', 'test', '0.1.0')
-    assert not constraint_match('test <=1.0.0', 'test', '1.1.0')
-    assert not constraint_match('test >1.0.0', 'test', '0.1.0')
-    assert not constraint_match('test <1.0.0', 'test', '1.1.0')
+    assert not constraint_match(' >=1.0.0', '0.1.0')
+    assert not constraint_match(' ==1.0.0', '0.1.0')
+    assert not constraint_match(' <=1.0.0', '1.1.0')
+    assert not constraint_match(' >1.0.0', '0.1.0')
+    assert not constraint_match(' <1.0.0', '1.1.0')

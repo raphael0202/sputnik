@@ -8,6 +8,7 @@ from .package_stub import PackageStub
 
 
 class PackageNotFoundException(Exception): pass
+class CompatiblePackageNotFoundException(Exception): pass
 class InvalidDataPathException(Exception): pass
 
 
@@ -51,15 +52,20 @@ class PackageList(object):
             self._packages[package.ident] = package
 
     def get(self, package_string):
-        candidates = sorted(self.find(package_string))
+        candidates = self.find(util.split_package_string(package_string)[0])
         if not candidates:
             raise PackageNotFoundException(package_string)
+
+        candidates = sorted(self.find(package_string))
+        if not candidates:
+            raise CompatiblePackageNotFoundException(package_string)
         return candidates[-1]
 
     def find(self, package_string=None):
         res = []
         for package in self._packages.values():
-            if util.constraint_match(package_string, package.name, package.version):
+            name, constraint = util.split_package_string(package_string)
+            if not name or name == package.name and util.constraint_match(constraint, package.version):
                 res.append(package)
         return res
 
