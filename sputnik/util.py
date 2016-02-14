@@ -29,11 +29,14 @@ def default_data_path(app_name):
 def constraint_match(constraint, name, version=None):
     if not constraint:
         return True
-    m = re.match(r'([a-z_]+)\s*([><=][=]?\d+\.\d+\.\d+)?', constraint)
+    m = re.match(r'([a-z_]+)\s*(([><=][=]?\d+(\.\d+)*[,\s]*)*)', constraint)
     if not m:
         return False
-    c_name, c_version = m.groups()
-    return c_name == name and (not c_version or semver.match(version, c_version))
+    # TODO allow versions to be in compact form (e.g., 0.1 instead of 0.1.0)
+    c_name, c_versions = m.groups()[:2]
+    if c_name != name:
+        return False
+    return not c_versions or all(semver.match(version, v.strip()) for v in c_versions.split(','))
 
 
 def get_path(*path_parts, **kwargs):

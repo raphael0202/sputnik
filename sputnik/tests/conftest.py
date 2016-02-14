@@ -20,7 +20,7 @@ def tmp_path2():
 
 
 @pytest.fixture(scope='module')
-def sample_package_path(version='1.0.0', compat_version='==1.0.0'):
+def sample_package_path(version='1.0.0'):
     path = tempfile.mkdtemp()
 
     with io.open(os.path.join(path, 'package.json'), 'wb') as f:
@@ -30,7 +30,7 @@ def sample_package_path(version='1.0.0', compat_version='==1.0.0'):
             "include": [("data", "*")],
             "version": version,
             "license": "public domain",
-            "compatibility": {"test": compat_version}
+            "compatibility": {"test": None}
         }))
     data_path = os.path.join(path, 'data')
     os.mkdir(data_path)
@@ -44,12 +44,7 @@ def sample_package_path(version='1.0.0', compat_version='==1.0.0'):
 
 @pytest.fixture(scope='module')
 def sample_package_path2():
-    return sample_package_path('2.0.0', '==2.0.0')
-
-
-@pytest.fixture(scope='module')
-def multi_version_package_path():
-    return sample_package_path('1.0.0', '>=0.100.0,<0.101.0')
+    return sample_package_path('2.0.0')
 
 
 def pytest_addoption(parser):

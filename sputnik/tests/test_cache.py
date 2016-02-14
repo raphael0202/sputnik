@@ -2,8 +2,7 @@ import pytest
 
 from ..cache import Cache
 from ..package_stub import PackageStub
-from ..package_list import CompatiblePackageNotFoundException, \
-                           PackageNotFoundException
+from ..package_list import PackageNotFoundException
 
 
 def test_list(tmp_path):
@@ -85,7 +84,7 @@ def test_update_compatible(tmp_path):
         'name': 'abc',
         'version': '1.0.0',
         'compatibility': {
-            'test': '>=0.9.0'
+            'test': None
         }
     })
 
@@ -117,7 +116,7 @@ def test_update_incompatible(tmp_path):
         'name': 'abc',
         'version': '1.0.0',
         'compatibility': {
-            'test': '>=2.0.0'
+            'test': None
         }
     })
 
@@ -130,11 +129,7 @@ def test_update_incompatible(tmp_path):
 
     cache.update(meta, None)
 
-    assert len(cache.find()) == 0
-
-    with pytest.raises(CompatiblePackageNotFoundException):
-        cache.get('abc')
-        cache.get('abc >=0.0.0')
+    assert len(cache.find()) == 1
 
     with pytest.raises(PackageNotFoundException):
         assert cache.get('xyz')
@@ -148,7 +143,7 @@ def test_update_multiple_compatible(tmp_path):
             'name': 'abc',
             'version': '%d.0.0' % i,  # from 1.0.0 to 10.0.0
             'compatibility': {
-                'test': '>=%d.0.0' % i  # from 1.0.0 to 10.0.0
+                'test': None
             }
         })
 
@@ -159,8 +154,8 @@ def test_update_multiple_compatible(tmp_path):
 
         cache.update(meta, None)
 
-    assert len(cache.find()) == 5
-    assert cache.get('abc').version == '5.0.0'
+    assert len(cache.find()) == 10
+    assert cache.get('abc').version == '10.0.0'
 
     with pytest.raises(PackageNotFoundException):
         assert cache.get('xyz')
@@ -174,7 +169,7 @@ def test_update_multiple_incompatible(tmp_path):
             'name': 'abc',
             'version': '%d.0.0' % i,  # from 1.0.0 to 10.0.0
             'compatibility': {
-                'test': '>=%d.0.0' % i  # from 1.0.0 to 10.0.0
+                'test': None
             }
         })
 
@@ -185,11 +180,7 @@ def test_update_multiple_incompatible(tmp_path):
 
         cache.update(meta, None)
 
-    assert len(cache.find()) == 0
-
-    with pytest.raises(CompatiblePackageNotFoundException):
-        cache.get('abc')
-        cache.get('abc >=0.0.0')
+    assert len(cache.find()) == 10
 
     with pytest.raises(PackageNotFoundException):
         assert cache.get('xyz')

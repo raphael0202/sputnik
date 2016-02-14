@@ -9,7 +9,6 @@ from . import util
 from .package_stub import PackageStub
 
 
-class CompatiblePackageNotFoundException(Exception): pass
 class PackageNotFoundException(Exception): pass
 class InvalidDataPathException(Exception): pass
 
@@ -54,49 +53,22 @@ class PackageList(object):
             self._packages[package.ident] = package
 
     def get(self, package_string):
-        candidates = sorted(self.find(package_string, only_compatible=False),
-                            key=lambda c: (self.is_compatible(c), c))
-
+        candidates = sorted(self.find(package_string))
         if not candidates:
             raise PackageNotFoundException(package_string)
+        return candidates[-1]
 
-        package = candidates[-1]
-
-        if not self.is_compatible(package):
-            raise CompatiblePackageNotFoundException(
-                'running %s %s but requires %s' %
-                (self.app_name, self.app_version, package.compatibility))
-
-        return package
-
-    def find(self, package_string=None, only_compatible=True):
+    def find(self, package_string=None):
         res = []
         for package in self._packages.values():
             if util.constraint_match(package_string, package.name, package.version):
-                if not only_compatible or self.is_compatible(package):
-                    res.append(package)
+                res.append(package)
         return res
 
     def purge(self):
         self.logger.info('purging %s', self.__class__.__name__)
         for package in self.find():
             self.remove(package)
-
-    def is_compatible(self, package):
-        def c(app_version, version_match):
-            # TODO allow app_version to be in compact form (e.g., 0.1 instead of 0.1.0)
-            if app_version:
-                return semver.match(app_version, version_match.strip())
-            return True
-
-        if not package.compatibility:
-            return True
-
-        compatibility = package.compatibility.get(self.app_name)
-        if not compatibility:
-            return not self.app_name
-
-        return all(c(self.app_version, v) for v in compatibility.split(','))
 
     def remove(self, package):
         if not os.path.isdir(package.path):

@@ -79,7 +79,7 @@ class Index(object):
         cache = Cache(self.app_name, self.app_version, self.data_path)
 
         # remember cached packages for removal
-        packages = cache.find(only_compatible=False)
+        packages = cache.find()
 
         index = json.load(session.open(request, 'utf8'))
 

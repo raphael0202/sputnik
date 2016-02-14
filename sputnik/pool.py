@@ -9,7 +9,6 @@ from .package_list import PackageList
 
 class NotEnoughSpaceException(Exception): pass
 class PackageAlreadyInstalledException(Exception): pass
-class PackageNotCompatibleException(Exception): pass
 
 
 class Pool(PackageList):
@@ -28,21 +27,16 @@ class Pool(PackageList):
                 shutil.rmtree(os.path.join(self.path, filename))
 
     def install(self, archive):
-        for pkg in self.find(archive.name, only_compatible=False):
+        for pkg in self.find(archive.name):
             if archive.ident == pkg.ident:
                 raise PackageAlreadyInstalledException(pkg.ident)
-
-        if not self.is_compatible(archive):
-            raise PackageNotCompatibleException(
-                'running %s %s but requires %s' %
-                (self.app_name, self.app_version, archive.compatibility))
 
         if not util.is_enough_space(self.path, archive.archive.size()):
             raise NotEnoughSpaceException('requires %0.2f MB' %
                                           (archive.size() / 1024 / 1024))
 
         # remove installed versions of same package
-        for pkg in self.find(archive.name, only_compatible=False):
+        for pkg in self.find(archive.name):
             self.remove(pkg)
 
         archive_name = util.archive_filename(archive.name, archive.version)
