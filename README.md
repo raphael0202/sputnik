@@ -16,10 +16,10 @@ Sputnik is available from [PyPI](https://pypi.python.org/pypi/sputnik) via ```pi
 pip install sputnik
 ```
 
-and via ```conda```
+and from spaCy's [Anaconda](https://anaconda.org/spacy/sputnik) channel via ```conda```
 
 ```
-conda install sputnik
+conda install -c https://conda.anaconda.org/spacy sputnik
 ```
 
 ## Build a package
