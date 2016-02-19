@@ -33,7 +33,7 @@ class Pool(PackageList):
 
         if not util.is_enough_space(self.path, archive.archive.size()):
             raise NotEnoughSpaceException('requires %0.2f MB' %
-                                          (archive.size() / 1024 / 1024))
+                                          (archive.archive.size() / 1024 / 1024))
 
         # remove installed versions of same package
         for pkg in self.find(archive.name):
