@@ -8,8 +8,9 @@
             "pip install source.tar.gz"
         ],
         "wheel": [
-            "python untar.py source.tar.gz .",
-            "python setup.py bdist_wheel --universal"
+            "python untar.py source.tar.gz src",
+            "python src/setup.py bdist_wheel --universal",
+            "python cpdist.py src/dist"
         ]
     },
     "test": {
