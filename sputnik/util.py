@@ -30,7 +30,7 @@ def default_data_path(app_name):
 def split_package_string(string):
     if not string:
         string = ''
-    m = re.search(r'[^a-z_]', string)
+    m = re.search(r'[^a-z0-9_]', string)
     if not m:
         return [string, '']
     return [string[:m.start()], string[m.start():].strip()]
