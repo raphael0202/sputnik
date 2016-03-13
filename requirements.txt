@@ -1,1 +1,3 @@
 semver
+boto
+pytest
