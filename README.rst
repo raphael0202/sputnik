@@ -1,141 +1,154 @@
-[![Travis CI](https://travis-ci.org/spacy-io/sputnik.svg?branch=master)](https://travis-ci.org/spacy-io/sputnik)
+.. image:: https://travis-ci.org/spacy-io/sputnik.svg?branch=master
+    :target: https://travis-ci.org/spacy-io/sputnik
 
-# Sputnik: a data package manager library
+=======================================
+Sputnik: a data package manager library
+=======================================
 
 Sputnik is a library for managing data packages for another library, e.g., models for a machine learning library.
 
-It also comes with a command-line interface, run ```sputnik --help``` or ```python -m sputnik --help``` for assistance.
+It also comes with a command-line interface, run ``sputnik --help`` or ``python -m sputnik --help`` for assistance.
 
-Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ```semver```) and is compatible with python >=2.6 and >=3.3 on Linux, OSX and Windows.
+Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ``semver``) and is compatible with python >=2.6 and >=3.3 on Linux, OSX and Windows.
 
-## Installation
+Installation
+------------
 
-Sputnik is available from [PyPI](https://pypi.python.org/pypi/sputnik) via ```pip```:
+Sputnik is available from `PyPI <https://pypi.python.org/pypi/sputnik>`_ via ``pip``:
 
-```
-pip install sputnik
-```
+.. code:: python
 
-and from spaCy's [Anaconda](https://anaconda.org/spacy/sputnik) channel via ```conda```
+ pip install sputnik
 
-```
-conda install -c https://conda.anaconda.org/spacy sputnik
-```
+and from spaCy's `Anaconda <https://anaconda.org/spacy/sputnik>`_ channel via ``conda``
 
-## Build a package
+.. code:: python
 
-Add a ```package.json``` file with following JSON to a directory ```sample``` and add some files in ```sample/data``` that you would like to have packaged, e.g., ```sample/data/model```. See a sample layout [here](https://github.com/spacy-io/sputnik/tree/master/sample).
+ conda install -c https://conda.anaconda.org/spacy sputnik
 
-```
-{
-  "name": "my_model",
-  "include": [["data", "*"]],
-  "version": "1.0.0"
-}
-```
+Build a package
+---------------
+
+Add a ``package.json`` file with following JSON to a directory ``sample`` and add some files in ``sample/data`` that you would like to have packaged, e.g., ``sample/data/model``. See a sample layout [here](https://github.com/spacy-io/sputnik/tree/master/sample).
+
+.. code:: python
+
+ {
+   "name": "my_model",
+   "include": [["data", "*"]],
+   "version": "1.0.0"
+ }
 
 Note that include's path components are lists to avoid platform compatibility issues.
 
-Build the package with following code, it should produce a new file and output its path: ```sample/my_model-1.0.0.sputnik```.
+Build the package with following code, it should produce a new file and output its path: ``sample/my_model-1.0.0.sputnik``.
 
-```
-import sputnik
-archive = sputnik.build('sample')
-print(archive.path)
-```
+.. code:: python
 
-## Install a package
+ import sputnik
+ archive = sputnik.build('sample')
+ print(archive.path)
 
-Decide for a location for your installed packages, e.g., ```packages```. Then install the previously built package with following code, it should output the path of the now installed package: ```packages/my_model-1.0.0```
+Install a package
+-----------------
 
-```
-package = sputnik.install(<app_name>, <app_version>, 'sample/my_model-1.0.0.sputnik', data_path='packages')
-print(package.path)
-```
+Decide for a location for your installed packages, e.g., ``packages``. Then install the previously built package with following code, it should output the path of the now installed package: ``packages/my_model-1.0.0``
 
-Replace ```<app_name>``` and ```<app_version>``` with your app's name and version. This information is used to check for package compatibility. You can also provide ```None``` instead to disable package compatibility checks. Read more about package compatibility under the Compatibility section below.
+.. code:: python
 
-## List installed packages
+ package = sputnik.install(<app_name>, <app_version>, 'sample/my_model-1.0.0.sputnik', data_path='packages')
+ print(package.path)
 
-This should output the package strings for all installed packages, e.g., ```['my_model-1.0.0']```:
+Replace ``<app_name>`` and ``<app_version>`` with your app's name and version. This information is used to check for package compatibility. You can also provide ``None`` instead to disable package compatibility checks. Read more about package compatibility under the Compatibility section below.
 
-```
-packages = sputnik.find(<app_name>, <app_version>, data_path='packages')
-print([p.ident for p in packages])
-```
+List installed packages
+-----------------------
 
-## Access package data
+This should output the package strings for all installed packages, e.g., ``['my_model-1.0.0']``:
+
+.. code:: python
+
+ packages = sputnik.find(<app_name>, <app_version>, data_path='packages')
+ print([p.ident for p in packages])
+
+Access package data
+-------------------
 
 Sputnik makes it easy to access packaged data files without dealing with filesystem paths or archive file formats.
 
 First, get a Sputnik package object with:
 
-```
-package = sputnik.package(<app_name>, <app_version>, 'my_model', data_path='packages')
-```
+.. code:: python
+
+ package = sputnik.package(<app_name>, <app_version>, 'my_model', data_path='packages')
 
 On the package object you can check for the existence of a file or directory, get it's path or directly open it. Note that each directory in a path must be provided as separate argument. Do not address paths with slashes or backslashes as this will lead to platform-compatibility issues.
 
-```
-if package.has_path('data', 'model'):
-  with io.open(package.file_path('data', 'model'), mode='r', encoding='utf8') as f:
-    res = f.read()
-```
+.. code:: python
 
-Alternatively you can use Sputnik's ```open()``` wrapper:
+ if package.has_path('data', 'model'):
+   with io.open(package.file_path('data', 'model'), mode='r', encoding='utf8') as f:
+     res = f.read()
 
-```
-with package.open(['data', 'model'], mode='r', encoding='utf8') as f:
-  res = f.read()
-```
+Alternatively you can use Sputnik's ``open()`` wrapper:
 
-Note that ```package.file_path()``` only works on files, not directory. Use ```package.dir_path()``` on directories.
+.. code:: python
 
-If you want to list all file contents of a package use ```sputnik.files('my_model', data_path='packages')```.
+ with package.open(['data', 'model'], mode='r', encoding='utf8') as f:
+   res = f.read()
 
-## Remove package
+Note that ``package.file_path()`` only works on files, not directory. Use ``package.dir_path()`` on directories.
 
-```
-sputnik.remove(<app_name>, <app_version>, 'my_model', data_path='packages')
-```
+If you want to list all file contents of a package use ``sputnik.files('my_model', data_path='packages')``.
 
-## Purge package pool/cache
+Remove package
+--------------
 
-```
-sputnik.purge(<app_name>, <app_version>, data_path='packages')
-```
+.. code:: python
 
-## Versioning
+ sputnik.remove(<app_name>, <app_version>, 'my_model', data_path='packages')
 
-```install```, ```find```, ```package```, ```files```, ```search``` and ```remove``` commands accept version constraint strings that follow [semantic versioning](http://semver.org/), e.g.:
+Purge package pool/cache
+------------------------
 
-```
-sputnik.install(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
-sputnik.find(<app_name>, <app_version>, 'my_model >1.0.0', data_path='packages')
-sputnik.package(<app_name>, <app_version>, 'my_model >=1.0.0', data_path='packages')
-sputnik.search(<app_name>, <app_version>, 'my_model <1.0.0', data_path='packages')
-sputnik.files(<app_name>, <app_version>, 'my_model <=1.0.0', data_path='packages')
-sputnik.remove(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
-```
+.. code:: python
 
-Multiple version constraints can be concatenated with commas, e.g., ```my_model >=1.0.0,<2.0.0```. The constraint expression is satisfied if all individual constraints are satisfied.
+ sputnik.purge(<app_name>, <app_version>, data_path='packages')
 
-## Compatibility
+Versioning
+----------
 
-Sputnik allows to specify compatibility of a package with an app's name to let an index server provide app-specific views on installable packages. An app in this context is the project that imports Sputnik (e.g., ```my_library```).
+``install``, ``find``, ``package``, ``files``, ``search`` and ``remove`` commands accept version constraint strings that follow `semantic versioning <http://semver.org/>`_, e.g.:
+
+.. code:: python
+
+ sputnik.install(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
+ sputnik.find(<app_name>, <app_version>, 'my_model >1.0.0', data_path='packages')
+ sputnik.package(<app_name>, <app_version>, 'my_model >=1.0.0', data_path='packages')
+ sputnik.search(<app_name>, <app_version>, 'my_model <1.0.0', data_path='packages')
+ sputnik.files(<app_name>, <app_version>, 'my_model <=1.0.0', data_path='packages')
+ sputnik.remove(<app_name>, <app_version>, 'my_model ==1.0.0', data_path='packages')
+
+Multiple version constraints can be concatenated with commas, e.g., ``my_model >=1.0.0,<2.0.0``. The constraint expression is satisfied if all individual constraints are satisfied.
+
+Compatibility
+-------------
+
+Sputnik allows to specify compatibility of a package with an app's name to let an index server provide app-specific views on installable packages. An app in this context is the project that imports Sputnik (e.g., ``my_library``).
 
 my_model/package.json:
-```
-{
-  "name": "my_model",
-  "description": "this model is awesome",
-  "include": ["data/*"],
-  "version": "2.0.0",
-  "license": "public domain",
-  "compatibility": {
-    "my_library": null
-  }
-}
-```
+
+.. code:: python
+
+ {
+   "name": "my_model",
+   "description": "this model is awesome",
+   "include": ["data/*"],
+   "version": "2.0.0",
+   "license": "public domain",
+   "compatibility": {
+     "my_library": null
+   }
+ }
 
 Currently no compatibility checks are performed within Sputnik code.
