@@ -5,7 +5,7 @@
 
 __title__ = 'sputnik'
 __version__ = '0.9.2'
-__summary__ = 'Sputnik data package manager library'
+__summary__ = 'Data package manager library'
 __uri__ = 'https://github.com/spacy-io/sputnik'
 __author__ = 'Henning Peters'
 __email__ = 'hp@spacy.io'
