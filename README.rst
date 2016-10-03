@@ -1,14 +1,10 @@
 Sputnik: a data package manager library
 ***************************************
 
-    .. image:: https://travis-ci.org/spacy-io/sputnik.svg?branch=master
-        :target: https://travis-ci.org/spacy-io/sputnik
+Sputnik is a library for managing data packages for another library, e.g., models for a machine learning library. It also comes with a command-line interface, run ``sputnik --help`` or ``python -m sputnik --help`` for assistance. Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ``semver``) and is compatible with python >=2.6 and >=3.3 on Linux, OSX and Windows.
 
-Sputnik is a library for managing data packages for another library, e.g., models for a machine learning library.
-
-It also comes with a command-line interface, run ``sputnik --help`` or ``python -m sputnik --help`` for assistance.
-
-Sputnik is a pure Python library licensed under MIT, has minimal dependencies (only ``semver``) and is compatible with python >=2.6 and >=3.3 on Linux, OSX and Windows.
+.. image:: https://travis-ci.org/spacy-io/sputnik.svg?branch=master
+    :target: https://travis-ci.org/spacy-io/sputnik
 
 Installation
 ============
